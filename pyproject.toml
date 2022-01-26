@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "tradezoo"
+version = "0.1.0"
+description = "Studying emergent phenomena in financial markets by having AI trade against AI."
+authors = ["Mikolaj Bochenski <mikolaj.bochenski@lynxhedge.se>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.10"
+numpy = "^1.22.1"
+torch = "^1.10.1"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
