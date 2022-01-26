@@ -10,6 +10,9 @@ class Market:
     accounts: List[Account]
     orders: List[Order]
 
+    def orders_by(self, account: Account):
+        return [order for order in self.orders if order.submitted_by is account]
+
     def submit_(self, order: Order):
         """Instantly execute the order if possible, otherwise add it to the order book"""
         matches = [potential for potential in self.orders if order.matches(potential)]
@@ -22,3 +25,7 @@ class Market:
         order.execute_(execution_price)
         best_match.execute_(execution_price)
         self.orders.remove(best_match)
+
+    def cancel_(self, order: Order):
+        """Cancel the order"""
+        self.orders.remove(order)
