@@ -24,11 +24,11 @@ class Market:
             trade.seller.cash_balance += trade.cash_amount
             trade.seller.stock_balance -= trade.volume
             order.volume -= trade.volume
+            match.volume -= trade.volume
+            if match.volume <= 0:
+                self.orders.remove(match)
             if order.volume <= 0:
                 break
-            match.volume -= trade.volume
-            assert match.volume <= 0
-            self.orders.remove(match)
         if order.volume > 0:
             self.orders.append(order)
 
