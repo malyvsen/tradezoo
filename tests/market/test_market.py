@@ -66,7 +66,7 @@ def test_multiple_matches():
     assert market.accounts[1] == Account(cash_balance=9, stock_balance=4.5)
 
 
-def test_exchausting_orderbook():
+def test_exhausting_orderbook():
     market = Market(
         accounts=[
             Account(cash_balance=5, stock_balance=5),
