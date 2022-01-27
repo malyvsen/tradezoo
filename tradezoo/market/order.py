@@ -7,35 +7,34 @@ from .account import Account
 class Order:
     submitted_by: Account
     price: float
+    volume: float
 
     @property
-    def valid(self) -> bool:
+    def priority(self) -> float:
+        """An order with a higher priority gets executed sooner"""
         raise NotImplementedError()
 
-    def execute_(self):
+    def matches(self, other: "Order") -> bool:
         raise NotImplementedError()
 
     @classmethod
     def match(cls, buy_order: "BuyOrder", sell_order: "SellOrder") -> bool:
         assert isinstance(buy_order, BuyOrder)
         assert isinstance(sell_order, SellOrder)
-        if not buy_order.valid or not sell_order.valid:
-            return False
         if buy_order.submitted_by is sell_order.submitted_by:
+            return False
+        if buy_order.submitted_by.cash_balance <= 0:
+            return False
+        if sell_order.submitted_by.stock_balance <= 0:
             return False
         return buy_order.price >= sell_order.price
 
 
 @dataclass
-class BuyOrder:
+class BuyOrder(Order):
     @property
-    def valid(self) -> bool:
-        return self.account.cash_balance >= self.price
-
-    def execute_(self, price: float):
-        assert price <= self.price
-        self.submitted_by.cash_balance -= price
-        self.submitted_by.stock_balance += 1
+    def priority(self) -> float:
+        return self.price
 
     def matches(self, order) -> bool:
         if not isinstance(order, SellOrder):
@@ -44,15 +43,10 @@ class BuyOrder:
 
 
 @dataclass
-class SellOrder:
+class SellOrder(Order):
     @property
-    def valid(self) -> bool:
-        return self.account.stock_balance >= 1
-
-    def execute_(self, price: float):
-        assert price >= self.price
-        self.submitted_by.cash_balance += price
-        self.submitted_by.stock_balance -= 1
+    def priority(self) -> float:
+        return -self.price
 
     def matches(self, order) -> bool:
         if not isinstance(order, BuyOrder):
