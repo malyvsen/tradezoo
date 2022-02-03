@@ -12,6 +12,10 @@ class Market:
     orders: List[Order]
     trade_history: List[Trade]
 
+    @classmethod
+    def from_accounts(cls, accounts: List[Account]) -> "Market":
+        return cls(accounts=accounts, orders=[], trade_history=[])
+
     def orders_by(self, account: Account):
         return [order for order in self.orders if order.submitted_by is account]
 
