@@ -4,13 +4,15 @@ import torch
 
 
 @dataclass(frozen=True)
-class NormalBatch:
-    means: torch.Tensor
-    scales: torch.Tensor
+class LogNormalBatch:
+    underlying_means: torch.Tensor
+    underlying_stds: torch.Tensor
 
     @cached_property
-    def torch_distribution(self) -> torch.distributions.Normal:
-        return torch.distributions.Normal(self.means, self.scales)
+    def torch_distribution(self) -> torch.distributions.LogNormal:
+        return torch.distributions.LogNormal(
+            self.underlying_means, self.underlying_stds
+        )
 
     def sample(self) -> torch.Tensor:
         return self.torch_distribution.sample()

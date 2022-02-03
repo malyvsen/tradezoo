@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import torch
 from typing import List
 
-from .normal_batch import NormalBatch
+from .log_normal_batch import LogNormalBatch
 from .action import Action
 
 
@@ -10,8 +10,8 @@ from .action import Action
 class DecisionBatch:
     """A batch of decisions made by the actor regarding the distribution of actions"""
 
-    ask: NormalBatch
-    bid: NormalBatch
+    ask: LogNormalBatch
+    bid: LogNormalBatch
 
     def sample(self) -> List[Action]:
         ask_samples = self.ask.sample()
