@@ -1,8 +1,5 @@
 import torch
 
-from .decision_batch import DecisionBatch
-from .state_batch import StateBatch
-
 
 class Actor(torch.nn.Module):
     def __init__(self):
@@ -17,11 +14,5 @@ class Actor(torch.nn.Module):
             torch.nn.Linear(16, 4),
         )
 
-    def forward(self, state_batch: StateBatch) -> DecisionBatch:
-        decision_parameters = self.network(state_batch.tensor)
-        return DecisionBatch(
-            ask_means=decision_parameters[:, 0],
-            ask_scales=decision_parameters[:, 1],
-            bid_means=decision_parameters[:, 2],
-            bid_scales=decision_parameters[:, 3],
-        )
+    def forward(self, states: torch.Tensor) -> torch.Tensor:
+        return self.network(states)

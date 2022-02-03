@@ -1,7 +1,5 @@
 import torch
 
-from .state_batch import StateBatch
-
 
 class Critic(torch.nn.Module):
     def __init__(self):
@@ -16,5 +14,5 @@ class Critic(torch.nn.Module):
             torch.nn.Linear(16, 1),
         )
 
-    def forward(self, state_batch: StateBatch) -> torch.Tensor:
-        return self.network(torch.from_numpy(state_batch.tensor)).squeeze(1)
+    def forward(self, states: torch.Tensor) -> torch.Tensor:
+        return self.network(states).squeeze(1)
