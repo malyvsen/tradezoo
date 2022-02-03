@@ -4,4 +4,4 @@ from .agent import Agent
 from .critic import Critic
 from .decision_batch import DecisionBatch
 from .log_normal_batch import LogNormalBatch
-from .state_batch import StateBatch
+from .state import State, StateBatch
