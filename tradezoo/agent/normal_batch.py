@@ -14,3 +14,6 @@ class NormalBatch:
 
     def sample(self) -> torch.Tensor:
         return self.torch_distribution.sample()
+
+    def log_probabilities(self, value: torch.Tensor) -> torch.Tensor:
+        return self.torch_distribution.log_prob(value)
