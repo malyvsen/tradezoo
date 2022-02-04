@@ -2,12 +2,11 @@ from tradezoo.market import Market, Account, BuyOrder, SellOrder
 
 
 def test_exact_match():
-    market = Market(
+    market = Market.from_accounts(
         accounts=[
             Account(cash_balance=1, stock_balance=1),
             Account(cash_balance=2, stock_balance=2),
         ],
-        orders=[],
     )
     market.submit_(BuyOrder(market.accounts[0], price=0.5, volume=1))
     market.submit_(SellOrder(market.accounts[1], price=0.5, volume=1))
@@ -17,12 +16,11 @@ def test_exact_match():
 
 
 def test_price_mismatch():
-    market = Market(
+    market = Market.from_accounts(
         accounts=[
             Account(cash_balance=5, stock_balance=5),
             Account(cash_balance=6, stock_balance=6),
         ],
-        orders=[],
     )
     market.submit_(BuyOrder(market.accounts[0], price=2, volume=1))
     market.submit_(SellOrder(market.accounts[1], price=3, volume=1))
@@ -32,12 +30,11 @@ def test_price_mismatch():
 
 
 def test_crossed_price():
-    market = Market(
+    market = Market.from_accounts(
         accounts=[
             Account(cash_balance=5, stock_balance=5),
             Account(cash_balance=6, stock_balance=6),
         ],
-        orders=[],
     )
     market.submit_(BuyOrder(market.accounts[0], price=3, volume=1))
     market.submit_(SellOrder(market.accounts[1], price=2, volume=1))
@@ -47,12 +44,11 @@ def test_crossed_price():
 
 
 def test_multiple_matches():
-    market = Market(
+    market = Market.from_accounts(
         accounts=[
             Account(cash_balance=5, stock_balance=5),
             Account(cash_balance=6, stock_balance=6),
         ],
-        orders=[],
     )
     market.submit_(BuyOrder(market.accounts[0], price=1, volume=1))
     market.submit_(BuyOrder(market.accounts[0], price=2, volume=1))
@@ -67,12 +63,11 @@ def test_multiple_matches():
 
 
 def test_exhausting_orderbook():
-    market = Market(
+    market = Market.from_accounts(
         accounts=[
             Account(cash_balance=5, stock_balance=5),
             Account(cash_balance=17, stock_balance=8),
         ],
-        orders=[],
     )
     market.submit_(SellOrder(market.accounts[0], price=3, volume=1))
     market.submit_(SellOrder(market.accounts[0], price=1, volume=1))
