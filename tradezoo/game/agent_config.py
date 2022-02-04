@@ -5,6 +5,7 @@ from tradezoo.market import Account
 
 
 @dataclass(frozen=True)
-class Ownership:
+class AgentConfig:
     agent: Agent
     account: Account
+    stock_value_noise: float

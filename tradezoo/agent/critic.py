@@ -14,5 +14,5 @@ class Critic(torch.nn.Module):
             torch.nn.Linear(16, 1),
         )
 
-    def forward(self, states: torch.Tensor) -> torch.Tensor:
-        return self.network(states).squeeze(1)
+    def forward(self, observations: torch.Tensor) -> torch.Tensor:
+        return self.network(observations).squeeze(1)

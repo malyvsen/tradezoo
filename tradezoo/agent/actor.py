@@ -14,5 +14,5 @@ class Actor(torch.nn.Module):
             torch.nn.Linear(16, 4),
         )
 
-    def forward(self, states: torch.Tensor) -> torch.Tensor:
-        return self.network(states)
+    def forward(self, observations: torch.Tensor) -> torch.Tensor:
+        return self.network(observations)
