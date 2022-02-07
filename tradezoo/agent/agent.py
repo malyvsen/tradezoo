@@ -10,6 +10,8 @@ from .observation import ObservationBatch
 
 @dataclass(frozen=True)
 class Agent:
+    """The brain of a trader - makes decisions, judges the observed state"""
+
     actor: Actor
     critic: Critic
 
