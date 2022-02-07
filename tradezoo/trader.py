@@ -4,7 +4,7 @@ from tradezoo.agent import Agent
 from tradezoo.market import Account
 
 
-@dataclass(frozen=True)
+@dataclass
 class Trader:
     """
     Everything that makes a market participant:
