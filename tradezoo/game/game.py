@@ -4,7 +4,7 @@ from typing import List
 
 from .geometric_brownian_motion import GeometricBrownianMotion
 from .turn_result import TurnResult
-from tradezoo.Trader import Trader
+from tradezoo.trader import Trader
 from tradezoo.market import BuyOrder, Market, SellOrder
 from tradezoo.agent import Observation
 
