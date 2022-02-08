@@ -16,6 +16,14 @@ class Game:
     traders: List[Trader]
     whose_turn: int
 
+    @classmethod
+    def new(
+        cls, market: Market, stock_value: GeometricBrownianMotion, traders: List[Trader]
+    ) -> "Game":
+        return cls(
+            market=market, stock_value=stock_value, traders=traders, whose_turn=0
+        )
+
     def turn_(self) -> TurnResult:
         current_trader = self.traders[self.whose_turn]
         for own_order in self.market.orders_by(current_trader.account):

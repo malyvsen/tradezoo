@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 
-from tradezoo.agent import Action, Agent, Observation
+from tradezoo.agent import Action, Observation
+from tradezoo.trader import Trader
 
 
 @dataclass(frozen=True)
 class TurnResult:
-    agent: Agent
+    trader: Trader
     observation: Observation
     action: Action
     reward: float
