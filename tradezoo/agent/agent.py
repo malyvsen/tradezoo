@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import torch
 from typing import List
 
+from tradezoo.market import Account
 from .action import Action
 from .actor import Actor
 from .critic import Critic
@@ -12,30 +13,14 @@ from .observation import ObservationBatch
 
 @dataclass(frozen=True)
 class Agent:
-    """The brain of a trader - makes decisions, judges the observed state"""
-
     actor: Actor
     actor_optimizer: torch.optim.Optimizer
     critic: Critic
     critic_optimizer: torch.optim.Optimizer
     discount_factor: float
 
-    @classmethod
-    def from_modules(
-        cls,
-        actor: Actor,
-        critic: Critic,
-        actor_optimizer_curried,
-        critic_optimizer_curried,
-        discount_factor: float,
-    ) -> "Agent":
-        return cls(
-            actor=actor,
-            actor_optimizer=actor_optimizer_curried(actor.parameters()),
-            critic=critic,
-            critic_optimizer=critic_optimizer_curried(critic.parameters()),
-            discount_factor=discount_factor,
-        )
+    account: Account
+    stock_value_noise: float
 
     def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
         decision_parameters = self.actor(observation_batch.tensor)
@@ -77,3 +62,9 @@ class Agent:
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        return self is other
