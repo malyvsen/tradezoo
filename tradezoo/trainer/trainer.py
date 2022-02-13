@@ -17,14 +17,10 @@ class Trainer:
         return cls(
             game=game,
             replay_buffers={
-                agent: ReplayBuffer.empty(capacity=replay_buffer_capacity)
-                for agent in game.agents
+                trader.agent: ReplayBuffer.empty(capacity=replay_buffer_capacity)
+                for trader in game.traders
             },
         )
-
-    @property
-    def agents(self):
-        return self.game.agents
 
     def turn_(self) -> TurnResult:
         turn_result = self.game.turn_()
