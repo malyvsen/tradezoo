@@ -28,7 +28,7 @@ class Trainer:
 
     def turn_(self) -> TurnResult:
         turn_result = self.game.turn_()
-        self.replay_buffers[turn_result.agent].register_turn_(turn_result)
+        self.replay_buffers[turn_result.trader.agent].register_turn_(turn_result)
         return turn_result
 
     def train_step_(self, agent: Agent, batch_size: int):
@@ -41,7 +41,7 @@ class Trainer:
         new_observations = ObservationBatch(
             observations=[experience.new_observation for experience in experiences]
         )
-        agent.agent.train_step_(
+        agent.train_step_(
             old_observations=old_observations,
             actions=actions,
             rewards=rewards,

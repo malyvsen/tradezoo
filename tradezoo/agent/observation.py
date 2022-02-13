@@ -13,18 +13,14 @@ class Observation:
     stock_balance: float
     best_ask: float
     best_bid: float
-    stock_value: float
 
     @classmethod
-    def from_situation(
-        cls, market: Market, account: Account, true_stock_value: float, noise: float
-    ) -> "Observation":
+    def from_situation(cls, market: Market, account: Account) -> "Observation":
         return cls(
             cash_balance=account.cash_balance,
             stock_balance=account.stock_balance,
             best_ask=min(order.price for order in market.sell_orders),
             best_bid=max(order.price for order in market.buy_orders),
-            stock_value=true_stock_value + noise,
         )
 
     @property
@@ -39,7 +35,6 @@ class Observation:
                 self.stock_balance,
                 self.best_ask,
                 self.best_bid,
-                self.stock_value,
             ]
         )
 

@@ -1,50 +1,49 @@
 from dataclasses import dataclass
-import numpy as np
 from typing import List
 
-from .geometric_brownian_motion import GeometricBrownianMotion
-from .turn_result import TurnResult
+from tradezoo.agent import Observation
 from tradezoo.market import BuyOrder, Market, SellOrder
-from tradezoo.agent import Agent, Observation
+from .trader import Trader
+from .turn_result import TurnResult
 
 
 @dataclass
 class Game:
     market: Market
-    stock_value: GeometricBrownianMotion
-    agents: List[Agent]
+    traders: List[Trader]
     whose_turn: int
 
     @classmethod
-    def new(
-        cls, market: Market, stock_value: GeometricBrownianMotion, agents: List[Agent]
-    ) -> "Game":
-        return cls(market=market, stock_value=stock_value, agents=agents, whose_turn=0)
+    def new(cls, market: Market, traders: List[Trader]) -> "Game":
+        return cls(market=market, traders=traders, whose_turn=0)
 
     def turn_(self) -> TurnResult:
-        current_agent = self.agents[self.whose_turn]
-        for own_order in self.market.orders_by(current_agent.account):
+        trader = self.traders[self.whose_turn]
+        for own_order in self.market.orders_by(trader.account):
             self.market.cancel_(own_order)
 
+        for market_maker_order in trader.market_maker.orders():
+            self.market.submit_(market_maker_order)
         observation = Observation.from_situation(
             market=self.market,
-            account=current_agent.account,
-            true_stock_value=self.stock_value.value,
-            noise=np.random.normal(loc=0, scale=current_agent.stock_value_noise),
+            account=trader.account,
         )
-        (action,) = current_agent.decide(observation.batch).sample()
+        (action,) = trader.agent.decide(observation.batch).sample()
         self.market.submit_(
-            BuyOrder(submitted_by=current_agent.account, price=action.bid, volume=1)
+            BuyOrder(submitted_by=trader.account, price=action.bid, volume=1)
         )
         self.market.submit_(
-            SellOrder(submitted_by=current_agent.account, price=action.ask, volume=1)
+            SellOrder(submitted_by=trader.account, price=action.ask, volume=1)
         )
+        for market_maker_order in self.market.orders_by(trader.market_maker.account):
+            self.market.cancel_(market_maker_order)
 
-        self.stock_value.step_()
         self.whose_turn = (self.whose_turn + 1) % len(self.agents)
         return TurnResult(
-            agent=current_agent,
+            agent=trader.agent,
             observation=observation,
             action=action,
-            reward=current_agent.account.net_worth(self.stock_value.value),
+            reward=trader.account.net_worth(
+                stock_value=(observation.best_bid * observation.best_ask) ** 0.5
+            ),
         )

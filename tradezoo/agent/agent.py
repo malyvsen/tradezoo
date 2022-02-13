@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import torch
 from typing import List
 
-from tradezoo.market import Account
 from .action import Action
 from .actor import Actor
 from .critic import Critic
@@ -18,9 +17,6 @@ class Agent:
     critic: Critic
     critic_optimizer: torch.optim.Optimizer
     discount_factor: float
-
-    account: Account
-    stock_value_noise: float
 
     def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
         decision_parameters = self.actor(observation_batch.tensor)

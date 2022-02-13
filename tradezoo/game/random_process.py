@@ -1,10 +1,36 @@
 from dataclasses import dataclass
 import numpy as np
+from typing import List
+
+
+class RandomProcess:
+    value: float
+
+    def step_(self):
+        raise NotImplementedError()
 
 
 @dataclass
-class GeometricBrownianMotion:
-    value: float
+class ProductRandomProcess(RandomProcess):
+    components: List[RandomProcess]
+
+    @property
+    def value(self) -> float:
+        return np.prod([component.value for component in self.components])
+
+    def step_(self):
+        for component in self.components:
+            component.step_()
+
+
+@dataclass
+class ConstantRandomProcess(RandomProcess):
+    def step_(self):
+        pass
+
+
+@dataclass
+class GeometricBrownianMotion(RandomProcess):
     underlying_mean: float
     underlying_std: float
 
