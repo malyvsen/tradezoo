@@ -6,4 +6,5 @@ from .random_process import (
     ConstantRandomProcess,
     GeometricBrownianMotion,
 )
+from .trader import Trader
 from .turn_result import TurnResult

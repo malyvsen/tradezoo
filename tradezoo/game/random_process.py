@@ -3,6 +3,7 @@ import numpy as np
 from typing import List
 
 
+@dataclass
 class RandomProcess:
     value: float
 

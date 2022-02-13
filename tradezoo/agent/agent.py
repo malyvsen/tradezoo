@@ -20,14 +20,15 @@ class Agent:
 
     def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
         decision_parameters = self.actor(observation_batch.tensor)
+        softplus = torch.nn.Softplus()
         return DecisionBatch(
             ask=LogNormalBatch(
                 underlying_means=decision_parameters[:, 0],
-                underlying_stds=decision_parameters[:, 1],
+                underlying_stds=0.01 + softplus(decision_parameters[:, 1]),
             ),
             bid=LogNormalBatch(
                 underlying_means=decision_parameters[:, 2],
-                underlying_stds=decision_parameters[:, 3],
+                underlying_stds=0.01 + softplus(decision_parameters[:, 3]),
             ),
         )
 

@@ -11,7 +11,7 @@ class LogNormalBatch:
     @cached_property
     def torch_distribution(self) -> torch.distributions.LogNormal:
         return torch.distributions.LogNormal(
-            self.underlying_means, self.underlying_stds
+            loc=self.underlying_means, scale=self.underlying_stds, validate_args=True
         )
 
     def sample(self) -> torch.Tensor:

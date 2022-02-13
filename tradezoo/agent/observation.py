@@ -35,7 +35,8 @@ class Observation:
                 self.stock_balance,
                 self.best_ask,
                 self.best_bid,
-            ]
+            ],
+            dtype=np.float32,
         )
 
 

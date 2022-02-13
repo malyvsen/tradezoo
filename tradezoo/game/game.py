@@ -38,9 +38,9 @@ class Game:
         for market_maker_order in self.market.orders_by(trader.market_maker.account):
             self.market.cancel_(market_maker_order)
 
-        self.whose_turn = (self.whose_turn + 1) % len(self.agents)
+        self.whose_turn = (self.whose_turn + 1) % len(self.traders)
         return TurnResult(
-            agent=trader.agent,
+            trader=trader,
             observation=observation,
             action=action,
             reward=trader.account.net_worth(
