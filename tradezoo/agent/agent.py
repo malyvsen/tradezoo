@@ -24,11 +24,11 @@ class Agent:
         return DecisionBatch(
             ask=LogNormalBatch(
                 underlying_means=decision_parameters[:, 0],
-                underlying_stds=0.01 + softplus(decision_parameters[:, 1]),
+                underlying_stds=softplus(decision_parameters[:, 1]),
             ),
             bid=LogNormalBatch(
                 underlying_means=decision_parameters[:, 2],
-                underlying_stds=0.01 + softplus(decision_parameters[:, 3]),
+                underlying_stds=softplus(decision_parameters[:, 3]),
             ),
         )
 
