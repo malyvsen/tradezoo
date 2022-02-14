@@ -15,6 +15,8 @@ class Trade:
     @classmethod
     def from_orders(cls, present_order: Order, incoming_order: Order) -> "Trade":
         assert present_order.matches(incoming_order)
+        assert present_order.executable
+        assert incoming_order.executable
         buy_order, sell_order = (
             (present_order, incoming_order)
             if isinstance(present_order, BuyOrder)

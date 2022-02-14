@@ -32,6 +32,10 @@ class Market:
         matches = [potential for potential in self.orders if order.matches(potential)]
         trades = []
         for match in sorted(matches, key=lambda match: match.priority, reverse=True):
+            if not order.executable:
+                break
+            if not match.executable:
+                continue
             trade = Trade.from_orders(present_order=match, incoming_order=order)
             trades.append(trade)
             trade.buyer.cash_balance -= trade.cash_amount
