@@ -25,7 +25,7 @@ class ProductRandomProcess(RandomProcess):
 
 
 @dataclass
-class ConstantRandomProcess(RandomProcess):
+class Constant(RandomProcess):
     def step_(self):
         pass
 

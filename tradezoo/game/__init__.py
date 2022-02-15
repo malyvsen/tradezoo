@@ -3,7 +3,7 @@ from .market_maker import MarketMaker
 from .random_process import (
     RandomProcess,
     ProductRandomProcess,
-    ConstantRandomProcess,
+    Constant,
     GeometricBrownianMotion,
 )
 from .trader import Trader

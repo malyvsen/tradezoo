@@ -3,7 +3,7 @@ from .game import (
     Game,
     MarketMaker,
     ProductRandomProcess,
-    ConstantRandomProcess,
+    Constant,
     GeometricBrownianMotion,
     Trader,
 )
