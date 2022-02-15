@@ -48,14 +48,15 @@ class Agent:
             - self.evaluate(old_observations)
         )
 
-        critic_loss = td_error.square()
+        critic_loss = td_error.square().mean()
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
         self.critic_optimizer.step()
 
-        actor_loss = -td_error.detach() * self.decide(
-            old_observations
-        ).log_probabilities(actions)
+        actor_loss = (
+            -td_error.detach()
+            * self.decide(old_observations).log_probabilities(actions)
+        ).mean()
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
