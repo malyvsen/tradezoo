@@ -29,10 +29,10 @@ class Game:
             account=trader.account,
         )
         (action,) = trader.agent.decide(observation.batch).sample()
-        self.market.submit_(
+        buy_trades = self.market.submit_(
             BuyOrder(submitted_by=trader.account, price=action.bid, volume=1)
         )
-        self.market.submit_(
+        sell_trades = self.market.submit_(
             SellOrder(submitted_by=trader.account, price=action.ask, volume=1)
         )
         for market_maker_order in self.market.orders_by(trader.market_maker.account):
@@ -46,4 +46,5 @@ class Game:
             reward=trader.account.net_worth(
                 stock_value=(observation.best_bid * observation.best_ask) ** 0.5
             ),
+            trades=buy_trades + sell_trades,
         )

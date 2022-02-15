@@ -10,11 +10,10 @@ from .trade import Trade
 class Market:
     accounts: List[Account]
     orders: List[Order]
-    trade_history: List[Trade]
 
     @classmethod
     def from_accounts(cls, accounts: List[Account]) -> "Market":
-        return cls(accounts=accounts, orders=[], trade_history=[])
+        return cls(accounts=accounts, orders=[])
 
     def orders_by(self, account: Account):
         return [order for order in self.orders if order.submitted_by is account]
@@ -50,7 +49,6 @@ class Market:
                 break
         if order.volume > 0:
             self.orders.append(order)
-        self.trade_history += trades
         return trades
 
     def cancel_(self, order: Order):
