@@ -10,7 +10,7 @@ from tradezoo.market import Market, Account
 @dataclass(frozen=True)
 class Observation:
     cash_balance: float
-    stock_balance: float
+    asset_balance: float
     best_ask: float
     best_bid: float
 
@@ -18,7 +18,7 @@ class Observation:
     def from_situation(cls, market: Market, account: Account) -> "Observation":
         return cls(
             cash_balance=account.cash_balance,
-            stock_balance=account.stock_balance,
+            asset_balance=account.asset_balance,
             best_ask=min(order.price for order in market.sell_orders),
             best_bid=max(order.price for order in market.buy_orders),
         )
@@ -32,7 +32,7 @@ class Observation:
         return np.array(
             [
                 self.cash_balance,
-                self.stock_balance,
+                self.asset_balance,
                 self.best_ask,
                 self.best_bid,
             ],

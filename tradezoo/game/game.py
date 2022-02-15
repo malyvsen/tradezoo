@@ -44,7 +44,7 @@ class Game:
             observation=observation,
             action=action,
             reward=trader.account.net_worth(
-                stock_value=(observation.best_bid * observation.best_ask) ** 0.5
+                asset_value=(observation.best_bid * observation.best_ask) ** 0.5
             ),
             trades=buy_trades + sell_trades,
         )

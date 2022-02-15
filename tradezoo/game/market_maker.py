@@ -14,7 +14,7 @@ class MarketMaker:
     @classmethod
     def inexhaustible(cls, ask_process: RandomProcess, bid_process: RandomProcess):
         return cls(
-            account=Account(cash_balance=float("inf"), stock_balance=float("inf")),
+            account=Account(cash_balance=float("inf"), asset_balance=float("inf")),
             ask_process=ask_process,
             bid_process=bid_process,
         )

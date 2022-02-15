@@ -55,7 +55,7 @@ class SellOrder(Order):
 
     @property
     def executable(self) -> bool:
-        return self.submitted_by.stock_balance > 0
+        return self.submitted_by.asset_balance > 0
 
     def matches(self, order) -> bool:
         if not isinstance(order, BuyOrder):

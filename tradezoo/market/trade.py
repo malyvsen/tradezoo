@@ -30,7 +30,7 @@ class Trade:
                 buy_order.volume,
                 buy_order.submitted_by.cash_balance / incoming_order.price,
                 sell_order.volume,
-                sell_order.submitted_by.stock_balance,
+                sell_order.submitted_by.asset_balance,
             ),
         )
 

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Account:
     cash_balance: float
-    stock_balance: float
+    asset_balance: float
 
-    def net_worth(self, stock_value):
-        return self.cash_balance + stock_value * self.stock_balance
+    def net_worth(self, asset_value):
+        return self.cash_balance + asset_value * self.asset_balance

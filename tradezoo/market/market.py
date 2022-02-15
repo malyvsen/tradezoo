@@ -38,9 +38,9 @@ class Market:
             trade = Trade.from_orders(present_order=match, incoming_order=order)
             trades.append(trade)
             trade.buyer.cash_balance -= trade.cash_amount
-            trade.buyer.stock_balance += trade.volume
+            trade.buyer.asset_balance += trade.volume
             trade.seller.cash_balance += trade.cash_amount
-            trade.seller.stock_balance -= trade.volume
+            trade.seller.asset_balance -= trade.volume
             order.volume -= trade.volume
             match.volume -= trade.volume
             if match.volume <= 0:
