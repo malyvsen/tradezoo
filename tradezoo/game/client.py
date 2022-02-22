@@ -6,7 +6,7 @@ from .random_process import RandomProcess
 
 
 @dataclass
-class MarketMaker:
+class Client:
     account: Account
     ask_process: RandomProcess
     bid_process: RandomProcess

@@ -2,14 +2,14 @@ from dataclasses import dataclass
 
 from tradezoo.agent import Agent
 from tradezoo.market import Account
-from .market_maker import MarketMaker
+from .client import Client
 
 
 @dataclass
 class Trader:
     agent: Agent
     account: Account
-    market_maker: MarketMaker
+    client: Client
 
     def __hash__(self):
         return id(self)

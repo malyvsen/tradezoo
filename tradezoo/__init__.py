@@ -1,7 +1,7 @@
 from .agent import Actor, Agent, Critic
 from .game import (
     Game,
-    MarketMaker,
+    Client,
     ProductRandomProcess,
     Constant,
     GeometricBrownianMotion,

@@ -1,5 +1,5 @@
 from .game import Game
-from .market_maker import MarketMaker
+from .client import Client
 from .random_process import (
     RandomProcess,
     ProductRandomProcess,
