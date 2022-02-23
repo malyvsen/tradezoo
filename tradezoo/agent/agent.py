@@ -22,11 +22,11 @@ class Agent:
         decision_parameters = self.actor(observation_batch.tensor)
         softplus = torch.nn.Softplus()
         return DecisionBatch(
-            ask=LogNormalBatch(
+            mid_price=LogNormalBatch(
                 underlying_means=decision_parameters[:, 0],
                 underlying_stds=softplus(decision_parameters[:, 1]),
             ),
-            bid=LogNormalBatch(
+            spread=LogNormalBatch(
                 underlying_means=decision_parameters[:, 2],
                 underlying_stds=softplus(decision_parameters[:, 3]),
             ),
