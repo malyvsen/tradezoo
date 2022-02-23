@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from typing import List
 
-from tradezoo.market import Market, Account
+from tradezoo.market import Market, Account, BuyOrder, SellOrder
 
 
 @dataclass(frozen=True)
@@ -16,12 +16,22 @@ class Observation:
 
     @classmethod
     def from_situation(cls, market: Market, account: Account) -> "Observation":
-        # TODO: prevent spoofing with invalid orders, and only take orders meant for us into account
+        # TODO: prevent spoofing with invalid orders
         return cls(
             cash_balance=account.cash_balance,
             asset_balance=account.asset_balance,
-            best_ask=min(order.price for order in market.sell_orders),
-            best_bid=max(order.price for order in market.buy_orders),
+            best_ask=min(
+                order.price
+                for order in market.orders
+                if isinstance(order, SellOrder)
+                if order.visibility.matches(account)
+            ),
+            best_bid=max(
+                order.price
+                for order in market.orders
+                if isinstance(order, BuyOrder)
+                if order.visibility.matches(account)
+            ),
         )
 
     @property

@@ -18,19 +18,15 @@ class Market:
     def orders_by(self, account: Account):
         return [order for order in self.orders if order.submitted_by is account]
 
-    @property
-    def buy_orders(self) -> List[BuyOrder]:
-        return [order for order in self.orders if isinstance(order, BuyOrder)]
-
-    @property
-    def sell_orders(self) -> List[SellOrder]:
-        return [order for order in self.orders if isinstance(order, SellOrder)]
+    def matching_orders(self, order: Order):
+        return [potential for potential in self.orders if order.matches(potential)]
 
     def submit_(self, order: Order) -> List[Trade]:
         """Instantly execute the order if possible, otherwise add it to the order book"""
-        matches = [potential for potential in self.orders if order.matches(potential)]
         trades = []
-        for match in sorted(matches, key=lambda match: match.priority, reverse=True):
+        for match in sorted(
+            self.matching_orders(order), key=lambda match: match.priority, reverse=True
+        ):
             trade = Trade.from_orders(present_order=match, incoming_order=order)
             if trade.volume <= 0:
                 continue
