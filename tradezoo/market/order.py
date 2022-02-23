@@ -14,11 +14,6 @@ class Order:
         """An order with a higher priority gets executed sooner"""
         raise NotImplementedError()
 
-    @property
-    def executable(self) -> bool:
-        """Can this order be executed?"""
-        raise NotImplementedError()
-
     def matches(self, other: "Order") -> bool:
         raise NotImplementedError()
 
@@ -37,10 +32,6 @@ class BuyOrder(Order):
     def priority(self) -> float:
         return self.price
 
-    @property
-    def executable(self) -> bool:
-        return self.submitted_by.cash_balance > 0
-
     def matches(self, order) -> bool:
         if not isinstance(order, SellOrder):
             return False
@@ -52,10 +43,6 @@ class SellOrder(Order):
     @property
     def priority(self) -> float:
         return -self.price
-
-    @property
-    def executable(self) -> bool:
-        return self.submitted_by.asset_balance > 0
 
     def matches(self, order) -> bool:
         if not isinstance(order, BuyOrder):
