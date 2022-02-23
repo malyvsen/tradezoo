@@ -10,18 +10,20 @@ from .action import Action
 class DecisionBatch:
     """A batch of decisions made by the actor regarding the distribution of actions"""
 
-    ask: LogNormalBatch
-    bid: LogNormalBatch
+    mid_price: LogNormalBatch
+    spread: LogNormalBatch
 
     def sample(self) -> List[Action]:
-        ask_samples = self.ask.sample()
-        bid_samples = self.bid.sample()
+        mid_prices = self.mid_price.sample()
+        spreads = self.spread.sample()
         return [
-            Action(ask=ask_sample.item(), bid=bid_sample.item())
-            for ask_sample, bid_sample in zip(ask_samples, bid_samples)
+            Action(mid_price=mid_price.item(), spread=spread.item())
+            for mid_price, spread in zip(mid_prices, spreads)
         ]
 
     def log_probabilities(self, actions: List[Action]) -> torch.Tensor:
-        return self.ask.log_probabilities(
-            torch.tensor([action.ask for action in actions])
-        ) + self.bid.log_probabilities(torch.tensor([action.bid for action in actions]))
+        return self.mid_price.log_probabilities(
+            torch.tensor([action.mid_price for action in actions])
+        ) + self.spread.log_probabilities(
+            torch.tensor([action.spread for action in actions])
+        )
