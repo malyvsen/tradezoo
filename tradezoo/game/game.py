@@ -19,6 +19,8 @@ class Game:
 
     def turn_(self) -> TurnResult:
         trader = self.traders[self.whose_turn]
+        for client_order in self.market.orders_by(trader.client.account):
+            self.market.cancel_(client_order)
         for own_order in self.market.orders_by(trader.account):
             self.market.cancel_(own_order)
 
@@ -30,13 +32,11 @@ class Game:
         )
         (action,) = trader.agent.decide(observation.batch).sample()
         buy_trades = self.market.submit_(
-            BuyOrder(submitted_by=trader.account, price=action.bid, volume=1)
+            BuyOrder.public(submitted_by=trader.account, price=action.bid, volume=1)
         )
         sell_trades = self.market.submit_(
-            SellOrder(submitted_by=trader.account, price=action.ask, volume=1)
+            SellOrder.public(submitted_by=trader.account, price=action.ask, volume=1)
         )
-        for client_order in self.market.orders_by(trader.client.account):
-            self.market.cancel_(client_order)
 
         self.whose_turn = (self.whose_turn + 1) % len(self.traders)
         return TurnResult(

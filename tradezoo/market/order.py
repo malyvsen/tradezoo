@@ -1,13 +1,25 @@
 from dataclasses import dataclass
+from typing import List
 
 from .account import Account
+from .account_filter import AccountFilter, BlacklistFilter
 
 
 @dataclass
 class Order:
     submitted_by: Account
+    visibility: AccountFilter
     price: float
     volume: float
+
+    @classmethod
+    def public(cls, submitted_by: Account, price: float, volume: float):
+        return cls(
+            submitted_by=submitted_by,
+            visibility=BlacklistFilter([submitted_by]),
+            price=price,
+            volume=volume,
+        )
 
     @property
     def priority(self) -> float:
@@ -21,7 +33,9 @@ class Order:
     def match(cls, buy_order: "BuyOrder", sell_order: "SellOrder") -> bool:
         assert isinstance(buy_order, BuyOrder)
         assert isinstance(sell_order, SellOrder)
-        if buy_order.submitted_by is sell_order.submitted_by:
+        if not buy_order.visibility.matches(sell_order.submitted_by):
+            return False
+        if not sell_order.visibility.matches(buy_order.submitted_by):
             return False
         return buy_order.price >= sell_order.price
 

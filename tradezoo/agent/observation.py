@@ -16,7 +16,7 @@ class Observation:
 
     @classmethod
     def from_situation(cls, market: Market, account: Account) -> "Observation":
-        # TODO: figure out a way to prevent spoofing with invalid orders
+        # TODO: prevent spoofing with invalid orders, and only take orders meant for us into account
         return cls(
             cash_balance=account.cash_balance,
             asset_balance=account.asset_balance,
