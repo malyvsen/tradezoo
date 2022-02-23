@@ -22,8 +22,8 @@ class Game:
         for own_order in self.market.orders_by(trader.account):
             self.market.cancel_(own_order)
 
-        for market_maker_order in trader.market_maker.orders():
-            self.market.submit_(market_maker_order)
+        for client_order in trader.client.orders():
+            self.market.submit_(client_order)
         observation = Observation.from_situation(
             market=self.market,
             account=trader.account,
@@ -35,8 +35,8 @@ class Game:
         sell_trades = self.market.submit_(
             SellOrder(submitted_by=trader.account, price=action.ask, volume=1)
         )
-        for market_maker_order in self.market.orders_by(trader.market_maker.account):
-            self.market.cancel_(market_maker_order)
+        for client_order in self.market.orders_by(trader.client.account):
+            self.market.cancel_(client_order)
 
         self.whose_turn = (self.whose_turn + 1) % len(self.traders)
         return TurnResult(
