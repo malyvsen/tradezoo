@@ -11,20 +11,20 @@ from .turn_result import TurnResult
 class Game:
     market: Market
     traders: List[Trader]
-    whose_turn: int
+    turn_number: int
 
     @classmethod
     def new(cls, market: Market, traders: List[Trader]) -> "Game":
-        return cls(market=market, traders=traders, whose_turn=0)
+        return cls(market=market, traders=traders, turn_number=0)
 
     def turn_(self) -> TurnResult:
-        trader = self.traders[self.whose_turn]
+        trader = self.traders[self.turn_number % len(self.traders)]
         for client_order in self.market.orders_by(trader.client.account):
             self.market.cancel_(client_order)
         for own_order in self.market.orders_by(trader.account):
             self.market.cancel_(own_order)
 
-        for client_order in trader.client.orders():
+        for client_order in trader.client.orders(self.turn_number):
             self.market.submit_(client_order)
         observation = Observation.from_situation(
             market=self.market,
@@ -38,7 +38,7 @@ class Game:
             SellOrder.public(submitted_by=trader.account, price=action.ask, volume=1)
         )
 
-        self.whose_turn = (self.whose_turn + 1) % len(self.traders)
+        self.turn_number += 1
         return TurnResult(
             trader=trader,
             observation=observation,

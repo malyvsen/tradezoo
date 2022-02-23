@@ -1,9 +1,9 @@
 from .game import Game
 from .client import Client
-from .random_process import (
-    RandomProcess,
-    ProductRandomProcess,
+from .time_series import (
+    TimeSeries,
     Constant,
+    SineWave,
     GeometricBrownianMotion,
 )
 from .trader import Trader

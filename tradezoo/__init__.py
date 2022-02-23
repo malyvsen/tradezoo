@@ -2,8 +2,8 @@ from .agent import Actor, Agent, Critic
 from .game import (
     Game,
     Client,
-    ProductRandomProcess,
     Constant,
+    SineWave,
     GeometricBrownianMotion,
     Trader,
 )
