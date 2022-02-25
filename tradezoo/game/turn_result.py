@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from tradezoo.agent import Action, Observation
+from tradezoo.agent import Action, DecisionBatch, Observation
 from tradezoo.market import Trade
 from .trader import Trader
 
@@ -10,6 +10,7 @@ from .trader import Trader
 class TurnResult:
     trader: Trader
     observation: Observation
+    decision_batch: DecisionBatch
     action: Action
     reward: float
     trades: List[Trade]

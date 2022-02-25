@@ -30,7 +30,8 @@ class Game:
             market=self.market,
             account=trader.account,
         )
-        (action,) = trader.agent.decide(observation.batch).sample()
+        decision_batch = trader.agent.decide(observation.batch)
+        (action,) = decision_batch.sample()
         buy_trades = self.market.submit_(
             BuyOrder.public(submitted_by=trader.account, price=action.bid, volume=1)
         )
@@ -42,6 +43,7 @@ class Game:
         return TurnResult(
             trader=trader,
             observation=observation,
+            decision_batch=decision_batch,
             action=action,
             reward=trader.account.net_worth(
                 asset_value=(observation.best_bid * observation.best_ask) ** 0.5
