@@ -16,6 +16,7 @@ class Experience:
     @classmethod
     def from_turn_results(cls, old: TurnResult, new: TurnResult):
         assert old.trader == new.trader
+        assert old.turn_number < new.turn_number
         return cls(
             old_observation=old.observation,
             action=old.action,

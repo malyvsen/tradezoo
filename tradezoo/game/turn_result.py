@@ -8,6 +8,7 @@ from .trader import Trader
 
 @dataclass(frozen=True)
 class TurnResult:
+    turn_number: int
     trader: Trader
     observation: Observation
     decision_batch: DecisionBatch

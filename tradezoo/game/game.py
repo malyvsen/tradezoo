@@ -39,8 +39,8 @@ class Game:
             SellOrder.public(submitted_by=trader.account, price=action.ask, volume=1)
         )
 
-        self.turn_number += 1
-        return TurnResult(
+        result = TurnResult(
+            turn_number=self.turn_number,
             trader=trader,
             observation=observation,
             decision_batch=decision_batch,
@@ -50,3 +50,5 @@ class Game:
             ),
             trades=buy_trades + sell_trades,
         )
+        self.turn_number += 1
+        return result
