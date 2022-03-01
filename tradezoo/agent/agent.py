@@ -14,9 +14,12 @@ from .observation import ObservationBatch
 class Agent:
     actor: Actor
     actor_optimizer: torch.optim.Optimizer
+    max_actor_grad_norm: float
     critic: Critic
     critic_optimizer: torch.optim.Optimizer
+    max_critic_grad_norm: float
     discount_factor: float
+    uncertainty: float
 
     def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
         decision_parameters = self.actor(observation_batch.tensor)
@@ -24,11 +27,11 @@ class Agent:
         return DecisionBatch(
             mid_price=LogNormalBatch(
                 underlying_means=decision_parameters[:, 0],
-                underlying_stds=softplus(decision_parameters[:, 1]),
+                underlying_stds=self.uncertainty + softplus(decision_parameters[:, 1]),
             ),
             spread=LogNormalBatch(
                 underlying_means=decision_parameters[:, 2],
-                underlying_stds=softplus(decision_parameters[:, 3]),
+                underlying_stds=self.uncertainty + softplus(decision_parameters[:, 3]),
             ),
         )
 
@@ -51,6 +54,9 @@ class Agent:
         critic_loss = td_error.square().mean()
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
+        torch.nn.utils.clip_grad.clip_grad_norm_(
+            self.critic.parameters(), self.max_critic_grad_norm
+        )
         self.critic_optimizer.step()
 
         actor_loss = (
@@ -59,6 +65,9 @@ class Agent:
         ).mean()
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
+        torch.nn.utils.clip_grad.clip_grad_norm_(
+            self.actor.parameters(), self.max_actor_grad_norm
+        )
         self.actor_optimizer.step()
 
     def __hash__(self):
