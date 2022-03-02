@@ -6,7 +6,6 @@ from .action import Action
 from .actor import Actor
 from .critic import Critic
 from .decision_batch import DecisionBatch
-from .log_normal_batch import LogNormalBatch
 from .observation import ObservationBatch
 
 
@@ -23,15 +22,14 @@ class Agent:
 
     def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
         decision_parameters = self.actor(observation_batch.tensor)
-        softplus = torch.nn.Softplus()
         return DecisionBatch(
-            mid_price=LogNormalBatch(
-                underlying_means=decision_parameters[:, 0],
-                underlying_stds=self.uncertainty + softplus(decision_parameters[:, 1]),
+            log_mid_price=torch.distributions.Normal(
+                loc=decision_parameters[:, 0],
+                scale=torch.clip(decision_parameters[:, 1], min=self.uncertainty),
             ),
-            spread=LogNormalBatch(
-                underlying_means=decision_parameters[:, 2],
-                underlying_stds=self.uncertainty + softplus(decision_parameters[:, 3]),
+            log_spread=torch.distributions.Normal(
+                loc=decision_parameters[:, 2],
+                scale=torch.clip(decision_parameters[:, 3], min=self.uncertainty),
             ),
         )
 
