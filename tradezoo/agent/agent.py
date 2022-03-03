@@ -25,11 +25,11 @@ class Agent:
         return DecisionBatch(
             log_mid_price=torch.distributions.Normal(
                 loc=decision_parameters[:, 0],
-                scale=torch.clip(decision_parameters[:, 1], min=self.uncertainty),
+                scale=self.uncertainty + decision_parameters[:, 1].abs(),
             ),
             log_spread=torch.distributions.Normal(
                 loc=decision_parameters[:, 2],
-                scale=torch.clip(decision_parameters[:, 3], min=self.uncertainty),
+                scale=self.uncertainty + decision_parameters[:, 3].abs(),
             ),
         )
 
