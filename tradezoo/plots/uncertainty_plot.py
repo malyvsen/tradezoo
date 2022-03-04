@@ -8,7 +8,7 @@ def uncertainty_plot(turn_results: List[TurnResult]):
     return go.Figure(
         layout=dict(
             xaxis_title="Turn number",
-            yaxis_title="Underlying standard deviation",
+            yaxis_title="Standard deviation",
             yaxis_type="log",
         ),
         data=[

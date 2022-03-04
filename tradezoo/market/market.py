@@ -21,6 +21,23 @@ class Market:
     def matching_orders(self, order: Order):
         return [potential for potential in self.orders if order.matches(potential)]
 
+    def best_ask(self, visible_to: Account):
+        return min(
+            order.price
+            for order in self.orders_visible_to(visible_to)
+            if isinstance(order, SellOrder)
+        )
+
+    def best_bid(self, visible_to: Account):
+        return max(
+            order.price
+            for order in self.orders_visible_to(visible_to)
+            if isinstance(order, BuyOrder)
+        )
+
+    def orders_visible_to(self, account: Account):
+        return [order for order in self.orders if order.visibility.matches(account)]
+
     def submit_(self, order: Order) -> List[Trade]:
         """Instantly execute the order if possible, otherwise add it to the order book"""
         trades = []

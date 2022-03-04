@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from typing import List
 
-from tradezoo.market import Market, Account, BuyOrder, SellOrder
+from tradezoo.market import Market, Account
 
 
 @dataclass(frozen=True)
@@ -22,18 +22,8 @@ class Observation:
         return cls(
             cash_balance=account.cash_balance,
             asset_balance=account.asset_balance,
-            best_ask=min(
-                order.price
-                for order in market.orders
-                if isinstance(order, SellOrder)
-                if order.visibility.matches(account)
-            ),
-            best_bid=max(
-                order.price
-                for order in market.orders
-                if isinstance(order, BuyOrder)
-                if order.visibility.matches(account)
-            ),
+            best_ask=market.best_ask(visible_to=account),
+            best_bid=market.best_bid(visible_to=account),
         )
 
     @property

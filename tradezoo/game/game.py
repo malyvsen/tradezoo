@@ -26,6 +26,7 @@ class Game:
 
         for client_order in trader.client.orders(self.turn_number):
             self.market.submit_(client_order)
+        old_utility = trader.utility(self.market)
         observation = Observation.from_situation(
             market=self.market,
             account=trader.account,
@@ -38,6 +39,7 @@ class Game:
         sell_trades = self.market.submit_(
             SellOrder.public(submitted_by=trader.account, price=action.ask, volume=1)
         )
+        new_utility = trader.utility(self.market)
 
         result = TurnResult(
             turn_number=self.turn_number,
@@ -45,9 +47,7 @@ class Game:
             observation=observation,
             decision_batch=decision_batch,
             action=action,
-            reward=trader.account.net_worth(
-                asset_value=(observation.best_bid * observation.best_ask) ** 0.5
-            ),
+            reward=new_utility - old_utility,
             trades=buy_trades + sell_trades,
         )
         self.turn_number += 1

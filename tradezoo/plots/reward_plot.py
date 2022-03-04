@@ -4,23 +4,23 @@ from typing import List
 from tradezoo.game import TurnResult
 
 
-def balance_plot(turn_results: List[TurnResult]):
+def reward_plot(turn_results: List[TurnResult]):
     return go.Figure(
         layout=dict(
             xaxis_title="Turn number",
-            yaxis_title="Balance",
+            yaxis_title="Reward",
         ),
         data=[
             go.Scatter(
-                name="Cash",
-                y=[
-                    turn_result.observation.cash_balance for turn_result in turn_results
-                ],
+                name="Instantaneous",
+                y=[turn_result.reward for turn_result in turn_results],
             ),
             go.Scatter(
-                name="Asset",
+                name="Estimated discounted reward",
                 y=[
-                    turn_result.observation.asset_balance
+                    turn_result.trader.agent.evaluate(
+                        turn_result.observation.batch
+                    ).item()
                     for turn_result in turn_results
                 ],
             ),
