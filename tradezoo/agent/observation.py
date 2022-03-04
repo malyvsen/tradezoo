@@ -14,6 +14,8 @@ class Observation:
     best_ask: float
     best_bid: float
 
+    epsilon = 1e-2
+
     @classmethod
     def from_situation(cls, market: Market, account: Account) -> "Observation":
         # TODO: prevent spoofing with invalid orders
@@ -42,10 +44,10 @@ class Observation:
     def array(self) -> np.ndarray:
         return np.array(
             [
-                self.cash_balance,
-                self.asset_balance,
-                self.best_ask,
-                self.best_bid,
+                np.log(self.epsilon + self.cash_balance),
+                np.log(self.epsilon + self.asset_balance),
+                np.log(self.epsilon + self.best_ask),
+                np.log(self.epsilon + self.best_bid),
             ],
             dtype=np.float32,
         )

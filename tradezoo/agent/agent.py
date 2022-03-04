@@ -13,10 +13,8 @@ from .observation import ObservationBatch
 class Agent:
     actor: Actor
     actor_optimizer: torch.optim.Optimizer
-    max_actor_grad_norm: float
     critic: Critic
     critic_optimizer: torch.optim.Optimizer
-    max_critic_grad_norm: float
     discount_factor: float
     uncertainty: float
 
@@ -52,9 +50,6 @@ class Agent:
         critic_loss = td_error.square().mean()
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
-        torch.nn.utils.clip_grad.clip_grad_norm_(
-            self.critic.parameters(), self.max_critic_grad_norm
-        )
         self.critic_optimizer.step()
 
         actor_loss = (
@@ -63,9 +58,6 @@ class Agent:
         ).mean()
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
-        torch.nn.utils.clip_grad.clip_grad_norm_(
-            self.actor.parameters(), self.max_actor_grad_norm
-        )
         self.actor_optimizer.step()
 
     def __hash__(self):

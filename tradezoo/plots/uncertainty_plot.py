@@ -15,14 +15,14 @@ def uncertainty_plot(turn_results: List[TurnResult]):
             go.Scatter(
                 name="Mid-price",
                 y=[
-                    turn_result.decision_batch.mid_price.underlying_stds.item()
+                    turn_result.decision_batch.log_mid_price.stddev.exp().item()
                     for turn_result in turn_results
                 ],
             ),
             go.Scatter(
                 name="Spread",
                 y=[
-                    turn_result.decision_batch.spread.underlying_stds.item()
+                    turn_result.decision_batch.log_spread.stddev.exp().item()
                     for turn_result in turn_results
                 ],
             ),
