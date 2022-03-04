@@ -26,7 +26,9 @@ class Game:
 
         for client_order in trader.client.orders(self.turn_number):
             self.market.submit_(client_order)
-        old_utility = trader.utility(self.market)
+        old_utility = trader.utility(
+            self.market
+        )  # TODO: wrong! this should be from the previous time step
         observation = Observation.from_situation(
             market=self.market,
             account=trader.account,
