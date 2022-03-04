@@ -14,7 +14,7 @@ class Observation:
     best_ask: float
     best_bid: float
 
-    epsilon = 1e-2
+    epsilon = 1
 
     @classmethod
     def from_situation(cls, market: Market, account: Account) -> "Observation":
