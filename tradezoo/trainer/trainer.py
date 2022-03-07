@@ -6,6 +6,7 @@ from tradezoo.agent import Agent, ObservationBatch
 from tradezoo.game import Game, TurnResult
 from .experience import Experience
 from .replay_buffer import ReplayBuffer
+from .train_result import TrainResult
 
 
 @dataclass
@@ -46,9 +47,24 @@ class Trainer:
         new_observations = ObservationBatch(
             observations=[experience.new_observation for experience in experiences]
         )
-        agent.train_step_(
-            old_observations=old_observations,
-            actions=actions,
-            rewards=rewards,
-            new_observations=new_observations,
+
+        td_error = (
+            rewards
+            + agent.discount_factor * agent.evaluate(new_observations).detach()
+            - agent.evaluate(old_observations)
         )
+
+        critic_loss = td_error.square().mean()
+        agent.critic_optimizer.zero_grad()
+        critic_loss.backward()
+        agent.critic_optimizer.step()
+
+        actor_loss = (
+            -td_error.detach()
+            * agent.decide(old_observations).log_probabilities(actions)
+        ).mean()
+        agent.actor_optimizer.zero_grad()
+        actor_loss.backward()
+        agent.actor_optimizer.step()
+
+        return TrainResult(actor_loss=actor_loss.item(), critic_loss=critic_loss.item())
