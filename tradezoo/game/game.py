@@ -45,9 +45,7 @@ class Game:
             observation=observation,
             decision_batch=decision_batch,
             action=action,
-            reward=trader.account.net_worth(
-                asset_value=(observation.best_bid * observation.best_ask) ** 0.5
-            ),
+            reward=trader.utility(observation),
             trades=buy_trades + sell_trades,
         )
         self.turn_number += 1

@@ -1,11 +1,13 @@
 import numpy as np
+import plotly
 import plotly.graph_objects as go
 
-from tradezoo.agent import Agent, Observation
+from tradezoo.agent import Observation
+from tradezoo.game import Trader
 
 
 def utility_plot(
-    agent: Agent,
+    trader: Trader,
     cash_balances=np.linspace(0, 256, 16),
     asset_balances=np.linspace(0, 256, 16),
     best_ask=2,
@@ -33,12 +35,32 @@ def utility_plot(
         ),
         data=[
             go.Surface(
+                name="Critic's expectation of future",
+                showscale=False,
+                showlegend=True,
+                colorscale=plotly.colors.sequential.thermal,
                 x=cash_balances,
                 y=asset_balances,
                 z=[
-                    [agent.evaluate(observation.batch).item() for observation in obs]
+                    [
+                        trader.agent.evaluate(observation.batch).item()
+                        * (1 - trader.agent.discount_factor)
+                        for observation in obs
+                    ]
                     for obs in observations
                 ],
-            )
+            ),
+            go.Surface(
+                name="True instantaneous utility",
+                showscale=False,
+                showlegend=True,
+                colorscale=plotly.colors.sequential.haline,
+                x=cash_balances,
+                y=asset_balances,
+                z=[
+                    [trader.utility(observation) for observation in obs]
+                    for obs in observations
+                ],
+            ),
         ],
     )

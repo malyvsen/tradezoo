@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cached_property
+import math
 import numpy as np
 import torch
 from typing import List
@@ -44,10 +45,10 @@ class Observation:
     def array(self) -> np.ndarray:
         return np.array(
             [
-                np.log(self.epsilon + self.cash_balance),
-                np.log(self.epsilon + self.asset_balance),
-                np.log(self.epsilon + self.best_ask),
-                np.log(self.epsilon + self.best_bid),
+                math.log(self.epsilon + self.cash_balance),
+                math.log(self.epsilon + self.asset_balance),
+                math.log(self.epsilon + self.best_ask),
+                math.log(self.epsilon + self.best_bid),
             ],
             dtype=np.float32,
         )
