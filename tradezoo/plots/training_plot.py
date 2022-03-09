@@ -6,12 +6,11 @@ from typing import List
 from tradezoo.trainer import TrainResult
 
 
-def loss_plot(train_results: List[TrainResult]):
+def training_plot(train_results: List[TrainResult]):
     return go.Figure(
         layout=dict(
             xaxis_title="Training step",
             yaxis_title="Loss",
-            yaxis_type="log",
         ),
         data=[
             go.Scatter(
