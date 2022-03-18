@@ -1,12 +1,19 @@
 import pandas as pd
 import plotly
 import plotly.graph_objects as go
-from typing import List
+from typing import List, Union
 
-from tradezoo.trainer import TrainResult
+from tradezoo.trainer import OnlineTrainResult, TrainResult
 
 
-def training_plot(train_results: List[TrainResult]):
+def training_plot(train_results: List[Union[TrainResult, OnlineTrainResult]]):
+    train_results = [
+        train_result
+        for result in train_results
+        for train_result in (
+            result.train_results if isinstance(result, OnlineTrainResult) else [result]
+        )
+    ]
     return go.Figure(
         layout=dict(
             xaxis_title="Training step",

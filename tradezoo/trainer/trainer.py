@@ -3,10 +3,10 @@ import torch
 from typing import Dict, List
 
 from tradezoo.agent import Agent, ObservationBatch
-from tradezoo.game import Game, TurnResult
+from tradezoo.game import Game
 from .experience import Experience
 from .replay_buffer import ReplayBuffer
-from .train_result import TrainResult
+from .train_result import OnlineTrainResult, TrainResult
 
 
 @dataclass
@@ -26,16 +26,19 @@ class Trainer:
             batch_size=batch_size,
         )
 
-    def turn_(self) -> TurnResult:
+    def train_online_(self) -> OnlineTrainResult:
         turn_result = self.game.turn_()
         replay_buffer = self.replay_buffers[turn_result.trader.agent]
         replay_buffer.register_turn_(turn_result)
+        train_results = []
         if len(replay_buffer.experiences) >= self.batch_size:
-            self.train_(
-                agent=turn_result.trader.agent,
-                experiences=replay_buffer.sample(self.batch_size),
+            train_results.append(
+                self.train_(
+                    agent=turn_result.trader.agent,
+                    experiences=replay_buffer.sample(self.batch_size),
+                )
             )
-        return turn_result
+        return OnlineTrainResult(turn_result=turn_result, train_results=train_results)
 
     @classmethod
     def train_(cls, agent: Agent, experiences: List[Experience]):
