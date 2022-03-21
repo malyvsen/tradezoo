@@ -38,35 +38,5 @@ def trades_plot(turn_results: List[TurnResult], num_samples=1, opacity=0.1):
                 marker=dict(color=plotly.colors.qualitative.Plotly[1]),
                 y=[turn_result.observation.best_bid for turn_result in turn_results],
             ),
-            go.Scatter(
-                name="Trader ask distribution",
-                mode="markers",
-                marker=dict(color=plotly.colors.qualitative.Plotly[2], opacity=opacity),
-                x=[
-                    turn_result.turn_number
-                    for turn_result in turn_results
-                    for sample_idx in range(num_samples)
-                ],
-                y=[
-                    turn_result.decision_batch.sample()[0].ask
-                    for turn_result in turn_results
-                    for sample_idx in range(num_samples)
-                ],
-            ),
-            go.Scatter(
-                name="Trader bid distribution",
-                mode="markers",
-                marker=dict(color=plotly.colors.qualitative.Plotly[3], opacity=opacity),
-                x=[
-                    turn_result.turn_number
-                    for turn_result in turn_results
-                    for sample_idx in range(num_samples)
-                ],
-                y=[
-                    turn_result.decision_batch.sample()[0].bid
-                    for turn_result in turn_results
-                    for sample_idx in range(num_samples)
-                ],
-            ),
         ],
     )

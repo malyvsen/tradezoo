@@ -1,25 +1,12 @@
-import math
 from dataclasses import dataclass
-from functools import cached_property
 
 
 @dataclass(frozen=True)
 class Action:
-    log_mid_price: float
-    log_spread: float
+    asset_allocation: float
+    """The fraction of the total portfolio allocated to the asset"""
 
-    @cached_property
-    def mid_price(self):
-        return math.exp(self.log_mid_price)
-
-    @cached_property
-    def spread(self):
-        return math.exp(self.log_spread)
-
-    @cached_property
-    def ask(self) -> float:
-        return self.mid_price * (1 + self.spread)
-
-    @cached_property
-    def bid(self) -> float:
-        return self.mid_price / (1 + self.spread)
+    @property
+    def constrained_asset_allocation(self):
+        """The asset allocation assuming no shorting/leverage"""
+        return min(max(self.asset_allocation, 0), 1)

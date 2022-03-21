@@ -19,13 +19,9 @@ class Agent:
     def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
         decision_parameters = self.actor(observation_batch.tensor)
         return DecisionBatch(
-            log_mid_price=torch.distributions.Normal(
+            asset_allocation=torch.distributions.Normal(
                 loc=decision_parameters[:, 0],
                 scale=self.uncertainty + decision_parameters[:, 1].abs(),
-            ),
-            log_spread=torch.distributions.Normal(
-                loc=decision_parameters[:, 2],
-                scale=self.uncertainty + decision_parameters[:, 3].abs(),
             ),
         )
 

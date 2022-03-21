@@ -32,12 +32,25 @@ class Game:
         )
         decision_batch = trader.agent.decide(observation.batch)
         (action,) = decision_batch.sample()
-        buy_trades = self.market.submit_(
-            BuyOrder.public(submitted_by=trader.account, price=action.bid, volume=1)
+        target_asset_balance = action.constrained_asset_allocation * (
+            trader.account.cash_balance + trader.account.asset_balance
         )
-        sell_trades = self.market.submit_(
-            SellOrder.public(submitted_by=trader.account, price=action.ask, volume=1)
-        )
+        if target_asset_balance < trader.account.asset_balance:
+            trades = self.market.submit_(
+                SellOrder.public(
+                    submitted_by=trader.account,
+                    price=observation.best_bid / 1.1,  # TODO: shouldn't be hardcoded
+                    volume=trader.account.asset_balance - target_asset_balance,
+                )
+            )
+        else:
+            trades = self.market.submit_(
+                BuyOrder.public(
+                    submitted_by=trader.account,
+                    price=observation.best_ask * 1.1,  # TODO: shouldn't be hardcoded
+                    volume=target_asset_balance - trader.account.asset_balance,
+                )
+            )
 
         result = TurnResult(
             turn_number=self.turn_number,
@@ -46,7 +59,7 @@ class Game:
             decision_batch=decision_batch,
             action=action,
             reward=trader.utility(observation),
-            trades=buy_trades + sell_trades,
+            trades=trades,
         )
         self.turn_number += 1
         return result

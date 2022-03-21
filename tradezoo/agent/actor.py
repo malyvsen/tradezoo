@@ -13,7 +13,7 @@ class Actor(torch.nn.Module):
             LogSquish(),
             torch.nn.Linear(32, 16),
             LogSquish(),
-            torch.nn.Linear(16, 4),
+            torch.nn.Linear(16, 2),
         )
 
     def forward(self, observations: torch.Tensor) -> torch.Tensor:
