@@ -1,36 +1,50 @@
 from dataclasses import dataclass
+from functools import cached_property
+import numpy as np
+import random
 import torch
+from typing import List
 
-from .actor import Actor
 from .critic import Critic
-from .decision_batch import DecisionBatch
-from .observation import ObservationBatch
+from .decision import Decision, DecisionBatch
+from .observation import ObservationSeries, ObservationSeriesBatch
 
 
 @dataclass(frozen=True)
 class Agent:
-    actor: Actor
-    actor_optimizer: torch.optim.Optimizer
     critic: Critic
-    critic_optimizer: torch.optim.Optimizer
+    optimizer: torch.optim.Optimizer
+    target: Critic
     discount_factor: float
-    uncertainty: float
+    random_decision_probability: float
+    decision_resolution: int
 
-    def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
-        decision_parameters = self.actor(observation_batch.tensor)
-        return DecisionBatch(
-            log_mid_price=torch.distributions.Normal(
-                loc=decision_parameters[:, 0],
-                scale=self.uncertainty + decision_parameters[:, 1].abs(),
+    def decide(self, observation_series: ObservationSeries) -> Decision:
+        if random.random() < self.random_decision_probability:
+            return random.choice(self.possible_decisions)
+        return self.best_decision(observation_series)
+
+    def best_decision(self, observation_series: ObservationSeries) -> Decision:
+        evaluations = self.critic.evaluate(
+            observations=ObservationSeriesBatch(
+                [observation_series] * len(self.possible_decisions)
             ),
-            log_spread=torch.distributions.Normal(
-                loc=decision_parameters[:, 2],
-                scale=self.uncertainty + decision_parameters[:, 3].abs(),
-            ),
+            decisions=DecisionBatch(self.possible_decisions),
         )
+        best_index = torch.argmax(evaluations, dim=0).item()
+        return self.possible_decisions[best_index]
 
-    def evaluate(self, observation_batch: ObservationBatch) -> torch.Tensor:
-        return self.critic(observation_batch.tensor)
+    @cached_property
+    def possible_decisions(self):
+        return [
+            Decision(
+                target_asset_allocation=target_asset_allocation, desperation=desperation
+            )
+            for target_asset_allocation in np.linspace(
+                0, 1, num=self.decision_resolution
+            )
+            for desperation in np.linspace(0, 1, num=self.decision_resolution)
+        ]
 
     def __hash__(self):
         return id(self)

@@ -1,68 +1,52 @@
 from dataclasses import dataclass
 from functools import cached_property
-import math
 import numpy as np
 import torch
 from typing import List
 
-from tradezoo.market import Market, Account, BuyOrder, SellOrder
-
 
 @dataclass(frozen=True)
 class Observation:
-    cash_balance: float
-    asset_balance: float
+    asset_allocation: float
     best_ask: float
     best_bid: float
 
-    epsilon = 1
 
-    @classmethod
-    def from_situation(cls, market: Market, account: Account) -> "Observation":
-        # TODO: prevent spoofing with invalid orders
-        return cls(
-            cash_balance=account.cash_balance,
-            asset_balance=account.asset_balance,
-            best_ask=min(
-                order.price
-                for order in market.orders
-                if isinstance(order, SellOrder)
-                if order.visibility.matches(account)
-            ),
-            best_bid=max(
-                order.price
-                for order in market.orders
-                if isinstance(order, BuyOrder)
-                if order.visibility.matches(account)
-            ),
-        )
+@dataclass(frozen=True)
+class ObservationSeries:
+    observations: List[Observation]
 
     @property
     def batch(self):
-        return ObservationBatch(observations=[self])
+        return ObservationSeriesBatch(series=[self])
 
-    @property
-    def array(self) -> np.ndarray:
-        return np.array(
+    @cached_property
+    def array(self):
+        def gather(attribute: str):
+            return np.array(
+                [getattr(observation, attribute) for observation in self.observations],
+                dtype=np.float32,
+            )
+
+        return np.stack(
             [
-                math.log(self.epsilon + self.cash_balance),
-                math.log(self.epsilon + self.asset_balance),
-                math.log(self.epsilon + self.best_ask),
-                math.log(self.epsilon + self.best_bid),
+                gather("asset_allocation"),
+                np.log(gather("best_bid")),
+                np.log(gather("best_ask")),
             ],
-            dtype=np.float32,
+            axis=0,
         )
 
 
 @dataclass(frozen=True)
-class ObservationBatch:
-    observations: List[Observation]
+class ObservationSeriesBatch:
+    series: List[ObservationSeries]
 
-    @cached_property
+    @property
     def tensor(self) -> torch.Tensor:
         return torch.from_numpy(
             np.stack(
-                [observation.array for observation in self.observations],
+                [series.array for series in self.series],
                 axis=0,
             )
         )
