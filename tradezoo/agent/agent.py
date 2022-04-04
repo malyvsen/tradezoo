@@ -19,15 +19,15 @@ class Agent:
     random_decision_probability: float
     decision_resolution: int
 
-    def decide(self, observation_series: ObservationSeries) -> Decision:
+    def decide(self, observations: ObservationSeries) -> Decision:
         if random.random() < self.random_decision_probability:
             return random.choice(self.possible_decisions)
-        return self.best_decision(observation_series)
+        return self.best_decision(observations)
 
-    def best_decision(self, observation_series: ObservationSeries) -> Decision:
+    def best_decision(self, observations: ObservationSeries) -> Decision:
         evaluations = self.critic.evaluate(
             observations=ObservationSeriesBatch(
-                [observation_series] * len(self.possible_decisions)
+                [observations] * len(self.possible_decisions)
             ),
             decisions=DecisionBatch(self.possible_decisions),
         )
