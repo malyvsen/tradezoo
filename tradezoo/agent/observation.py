@@ -37,6 +37,10 @@ class ObservationSeries:
             axis=0,
         )
 
+    def with_new(self, observation: Observation, horizon: int):
+        """A distinct ObservationSeries, with the given observation at the end"""
+        return type(self)(observation=(self.observations + [observation])[-horizon:])
+
 
 @dataclass(frozen=True)
 class ObservationSeriesBatch:
