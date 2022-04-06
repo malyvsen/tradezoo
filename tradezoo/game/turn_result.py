@@ -30,6 +30,7 @@ class BaseTurnResult:
         return TurnResult(
             trader=self.trader,
             observations=observations,
+            time_step=time_step,
             state=state,
             decision=decision,
             trades=trades,
@@ -45,6 +46,7 @@ class InitialTurnResult(BaseTurnResult):
 
 @dataclass(frozen=True)
 class TurnResult(BaseTurnResult):
+    time_step: int
     state: State
     decision: Decision
     trades: List[Trade]
