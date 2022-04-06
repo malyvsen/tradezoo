@@ -1,5 +1,6 @@
-from .game import Game
 from .client import Client
+from .game import Game
+from .state import State
 from .time_series import (
     TimeSeries,
     Constant,
