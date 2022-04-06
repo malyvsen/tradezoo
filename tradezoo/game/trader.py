@@ -15,6 +15,8 @@ class Trader:
     account: Account
     client: Client
     utility_function: Callable[[float], float]
+    horizon: int
+    discount_factor: float
 
     def state(self, market: Market):
         return State(

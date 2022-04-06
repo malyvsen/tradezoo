@@ -17,8 +17,6 @@ class Agent:
     critic: Critic
     optimizer: torch.optim.Optimizer
     target: Critic
-    horizon: int
-    discount_factor: float
     random_decision_probability: float
     decision_resolution: int
 
