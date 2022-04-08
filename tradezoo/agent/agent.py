@@ -15,10 +15,9 @@ class Agent:
     """The part of a trader responsible for making decisions."""
 
     critic: Critic
-    optimizer: torch.optim.Optimizer
-    target: Critic
     random_decision_probability: float
     decision_resolution: int
+    horizon: int
 
     def decide(self, observations: ObservationSeries) -> Decision:
         if random.random() < self.random_decision_probability:

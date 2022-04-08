@@ -24,7 +24,9 @@ class ReplayBuffer:
             self.last_turn_result = turn_result
             return
         self.add_experience_(
-            Experience.from_turn_results(old=self.last_turn_result, new=turn_result)
+            Experience(
+                old_turn_result=self.last_turn_result, new_turn_result=turn_result
+            )
         )
         self.last_turn_result = turn_result
 

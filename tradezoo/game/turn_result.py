@@ -22,7 +22,7 @@ class BaseTurnResult:
 
         state = self.trader.state(market=self.market)
         observations = self.observations.with_new(
-            state.observation, horizon=self.trader.horizon
+            state.observation, horizon=self.trader.agent.horizon
         )
         decision = self.trader.agent.decide(observations)
         order = self.trader.order(state=state, decision=decision)

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Callable
 
 from tradezoo.agent import Agent, Decision
 from tradezoo.market import Account, Market, BuyOrder, SellOrder
@@ -14,9 +13,6 @@ class Trader:
     agent: Agent
     account: Account
     client: Client
-    utility_function: Callable[[float], float]
-    horizon: int
-    discount_factor: float
 
     def state(self, market: Market):
         return State(
@@ -34,7 +30,7 @@ class Trader:
         asset_balance_change = asset_value_change / state.mid_price
         if asset_balance_change < 0:
             return SellOrder.public(
-                submitted_by=self.trader.account,
+                submitted_by=self.account,
                 price=state.best_bid / (1 + decision.desperation),
                 volume=-asset_balance_change,
             )
