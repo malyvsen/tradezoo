@@ -10,7 +10,7 @@ from .decision import Decision, DecisionBatch
 from .observation import ObservationSeries, ObservationSeriesBatch
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class Agent:
     """The part of a trader responsible for making decisions."""
 

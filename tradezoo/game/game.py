@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List
 
 from tradezoo.market import Market
-from .state import State, StateSeries
 from .trader import Trader
 from .turn_result import InitialTurnResult, TurnResult
 
