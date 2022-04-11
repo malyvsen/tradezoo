@@ -1,4 +1,5 @@
 from .agent import Agent, Critic, Decision, Observation
+from .experiment import Experiment
 from .game import (
     Client,
     Game,
