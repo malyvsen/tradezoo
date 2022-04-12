@@ -17,6 +17,7 @@ class Agent:
     critic: Critic
     random_decision_probability: float
     decision_resolution: int
+    max_desperation: float
     horizon: int
 
     def decide(self, observations: ObservationSeries) -> Decision:
@@ -43,7 +44,9 @@ class Agent:
             for target_asset_allocation in np.linspace(
                 0, 1, num=self.decision_resolution
             )
-            for desperation in np.linspace(0, 1, num=self.decision_resolution)
+            for desperation in np.linspace(
+                0, self.max_desperation, num=self.decision_resolution
+            )
         ]
 
     def __hash__(self):
