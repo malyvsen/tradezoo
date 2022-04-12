@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+from tqdm.auto import trange
 
 from tradezoo.agent import Agent
 from tradezoo.game import Game, Trader, TurnResult
@@ -20,7 +21,7 @@ class Experiment:
     @classmethod
     def run_(cls, game: Game, num_steps: int):
         time_steps = []
-        for step in range(num_steps):
+        for step in trange(num_steps):
             turn_result = game.turn_()
             agent = turn_result.trader.agent
             time_steps.append(
