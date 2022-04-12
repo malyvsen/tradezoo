@@ -1,5 +1,4 @@
 from .agent import Agent, Critic, Decision, Observation
-from .experiment import Experiment
 from .game import (
     Client,
     Game,
@@ -11,4 +10,4 @@ from .game import (
     TurnResult,
 )
 from .market import Account, Market
-from .training import Experience, LearningAgent, ReplayBuffer, TrainResult
+from .training import Experience, Experiment, LearningAgent, ReplayBuffer, TrainResult

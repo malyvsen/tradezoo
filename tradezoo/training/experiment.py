@@ -4,8 +4,9 @@ from tqdm.auto import trange
 
 from tradezoo.agent import Agent
 from tradezoo.game import Game, Trader, TurnResult
-from tradezoo.training import LearningAgent, TrainResult
 from .plots import balance_plot, reward_plot, trades_plot, training_plot
+from .learning_agent import LearningAgent
+from .train_result import TrainResult
 
 
 @dataclass(frozen=True)
