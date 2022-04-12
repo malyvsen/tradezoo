@@ -25,7 +25,7 @@ class LearningAgent(Agent):
 
     def post_turn_(self, turn_result: TurnResult):
         self.replay_buffer.register_turn_(turn_result)
-        if len(self.replay_buffer.experiences) < self.batch_size:
+        if not self.replay_buffer.full:
             return []
         return [self.train_step_() for _ in range(self.train_steps_per_turn)]
 

@@ -12,6 +12,10 @@ class ReplayBuffer:
     last_turn_result: TurnResult
     experiences: List[Experience]
 
+    @property
+    def full(self):
+        return len(self.experiences) == self.capacity
+
     @classmethod
     def empty(cls, capacity: int):
         return cls(capacity=capacity, last_turn_result=None, experiences=[])
