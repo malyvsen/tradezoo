@@ -7,7 +7,7 @@ class Critic(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.observation_embedder = torch.nn.LSTM(
-            input_size=6, hidden_size=64, batch_first=True
+            input_size=3, hidden_size=64, batch_first=True
         )
         self.decision_embedder = torch.nn.Sequential(
             torch.nn.Linear(2, 64),
@@ -29,7 +29,7 @@ class Critic(torch.nn.Module):
     def forward(
         self, observations: torch.Tensor, decisions: torch.Tensor
     ) -> torch.Tensor:
-        observation_embeddings = self.observation_embedder(observations)
+        observation_embeddings, lstm_states = self.observation_embedder(observations)
         decision_embedding = self.decision_embedder(decisions)
         combined_embeddings = torch.cat(
             [observation_embeddings[:, -1], decision_embedding], dim=1

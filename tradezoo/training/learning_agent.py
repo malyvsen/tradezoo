@@ -40,7 +40,7 @@ class LearningAgent(Agent):
         if self.steps_completed % self.steps_per_target_update == 0:
             self.update_target_()
         self.steps_completed += 1
-        return TrainResult(td_error=td_error.item())
+        return TrainResult(loss=loss.item())
 
     def td_error(self, experiences: List[Experience]):
         old_observations = ObservationSeriesBatch(
@@ -67,7 +67,7 @@ class LearningAgent(Agent):
                 observations=observations.tensor.repeat_interleave(
                     len(self.possible_decisions), dim=0
                 ),
-                decisions=DecisionBatch([self.possible_decisions]).tensor.tile(
+                decisions=DecisionBatch(self.possible_decisions).tensor.tile(
                     [len(observations.series), 1]
                 ),
             )

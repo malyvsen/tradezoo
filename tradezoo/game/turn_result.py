@@ -20,7 +20,7 @@ class BaseTurnResult:
         for client_order in self.trader.client.orders(time_step):
             market.submit_(client_order)
 
-        state = self.trader.state(market=self.market)
+        state = self.trader.state(market=market)
         observations = self.observations.with_new(
             state.observation, horizon=self.trader.agent.horizon
         )

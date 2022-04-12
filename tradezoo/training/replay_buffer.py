@@ -27,11 +27,11 @@ class ReplayBuffer:
         if self.last_turn_result is None:
             self.last_turn_result = turn_result
             return
-        self.add_experience_(
-            Experience(
-                old_turn_result=self.last_turn_result, new_turn_result=turn_result
-            )
+        experience = Experience(
+            old_turn_result=self.last_turn_result, new_turn_result=turn_result
         )
+        if experience.full_length:
+            self.add_experience_(experience)
         self.last_turn_result = turn_result
 
     def add_experience_(self, experience: Experience):

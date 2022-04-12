@@ -32,7 +32,7 @@ class Experiment:
                     else [],
                 )
             )
-        return cls(game=game, time_step=time_steps)
+        return cls(game=game, time_steps=time_steps)
 
     def balance_plot(self, trader: Trader):
         return balance_plot(self.turn_results(trader))

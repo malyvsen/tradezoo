@@ -35,7 +35,7 @@ class Trader:
                 volume=-asset_balance_change,
             )
         return BuyOrder.public(
-            submitted_by=self.trader.account,
+            submitted_by=self.account,
             price=state.best_ask * (1 + decision.desperation),
             volume=asset_balance_change,
         )

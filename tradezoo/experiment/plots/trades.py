@@ -7,9 +7,8 @@ from tradezoo.game import TurnResult
 def trades_plot(turn_results: List[TurnResult]):
     return go.Figure(
         layout=dict(
-            xaxis_title="Turn number",
-            yaxis_title="Price",
-            yaxis_type="log",
+            xaxis=dict(title="Turn number", range=[0, len(turn_results)]),
+            yaxis=dict(title="Price", type="log"),
         ),
         data=[
             go.Scatter(

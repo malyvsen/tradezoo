@@ -6,4 +6,4 @@ from tradezoo.game import TurnResult
 
 @dataclass(frozen=True)
 class TrainResult:
-    td_error: float
+    loss: float

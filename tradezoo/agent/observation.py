@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cached_property
+import math
 import numpy as np
 import torch
 from typing import List
@@ -10,6 +11,13 @@ class Observation:
     asset_allocation: float
     best_ask: float
     best_bid: float
+
+    @property
+    def array(self):
+        return np.array(
+            [self.asset_allocation, math.log(self.best_ask), math.log(self.best_bid)],
+            dtype=np.float32,
+        )
 
 
 @dataclass(frozen=True)
@@ -22,24 +30,14 @@ class ObservationSeries:
 
     @cached_property
     def array(self):
-        def gather(attribute: str):
-            return np.array(
-                [getattr(observation, attribute) for observation in self.observations],
-                dtype=np.float32,
-            )
-
         return np.stack(
-            [
-                gather("asset_allocation"),
-                np.log(gather("best_bid")),
-                np.log(gather("best_ask")),
-            ],
+            [observation.array for observation in self.observations],
             axis=0,
         )
 
     def with_new(self, observation: Observation, horizon: int):
         """A distinct ObservationSeries, with the given observation at the end"""
-        return type(self)(observation=(self.observations + [observation])[-horizon:])
+        return type(self)(observations=(self.observations + [observation])[-horizon:])
 
 
 @dataclass(frozen=True)
