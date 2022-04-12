@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from typing import List
 
-from tradezoo.training import TrainResult
+from ..train_result import TrainResult
 
 
 def training_plot(train_results: List[TrainResult], smoothing=16):

@@ -2,7 +2,8 @@ import plotly.graph_objects as go
 from typing import List
 
 from tradezoo.game import TurnResult
-from tradezoo.training import Experience, LearningAgent
+from ..experience import Experience
+from ..learning_agent import LearningAgent
 
 
 def reward_plot(agent: LearningAgent, turn_results: List[TurnResult]):
