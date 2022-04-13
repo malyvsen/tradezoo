@@ -15,7 +15,7 @@ def training_plot(agent: LearningAgent, train_results: List[TrainResult], smooth
     return go.Figure(
         layout=dict(
             xaxis=dict(title="Training step", range=[0, len(train_results) - 1]),
-            yaxis_title="Loss",
+            yaxis=dict(title="Loss", type="log"),
         ),
         data=[
             go.Scatter(
