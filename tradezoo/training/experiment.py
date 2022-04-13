@@ -45,7 +45,7 @@ class Experiment:
         return trades_plot(self.turn_results(trader))
 
     def training_plot(self, agent: Agent):
-        return training_plot(self.train_results(agent))
+        return training_plot(agent=agent, train_results=self.train_results(agent))
 
     def turn_results(self, trader: Trader):
         return [
