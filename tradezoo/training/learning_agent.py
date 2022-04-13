@@ -82,15 +82,15 @@ class LearningAgent(BaseAgent):
         return evaluations.max(dim=1).values
 
     def reward(self, experience: Experience):
-        old_state = experience.old_turn_result.state
         new_state = experience.new_turn_result.state
-        actual_utility = self.utility_function(
-            new_state.cash_balance + new_state.asset_balance * new_state.mid_price
-        )
-        hypothetical_utility = self.utility_function(
-            old_state.cash_balance + old_state.asset_balance * new_state.mid_price
-        )
-        return actual_utility - hypothetical_utility
+        new_utility = self.utility_function(
+            new_state.cash_balance + new_state.asset_balance
+        )  # FIXME: this assumes price of 1
+        old_state = experience.old_turn_result.state
+        old_utility = self.utility_function(
+            old_state.cash_balance + old_state.asset_balance
+        )  # also FIXME
+        return new_utility - old_utility
 
     def update_target_(self):
         self.target.load_state_dict(self.critic.state_dict())
