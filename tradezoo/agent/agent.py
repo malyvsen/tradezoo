@@ -11,11 +11,10 @@ from .observation import ObservationSeries, ObservationSeriesBatch
 
 
 @dataclass(frozen=False)
-class Agent:
+class BaseAgent:
     """The part of a trader responsible for making decisions."""
 
     critic: Critic
-    random_decision_probability: float
     decision_resolution: int
     max_desperation: float
     horizon: int
@@ -54,3 +53,8 @@ class Agent:
 
     def __eq__(self, other):
         return self is other
+
+
+@dataclass(frozen=False)
+class Agent(BaseAgent):
+    random_decision_probability: float

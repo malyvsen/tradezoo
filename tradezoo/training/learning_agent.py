@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import torch
 from typing import Callable, List
 
-from tradezoo.agent import Agent, Critic, DecisionBatch, ObservationSeriesBatch
+from tradezoo.agent import BaseAgent, Critic, DecisionBatch, ObservationSeriesBatch
 from tradezoo.game import TurnResult
 from .experience import Experience
 from .replay_buffer import ReplayBuffer
@@ -10,7 +10,8 @@ from .train_result import TrainResult
 
 
 @dataclass(frozen=False)
-class LearningAgent(Agent):
+class LearningAgent(BaseAgent):
+    exploration_schedule: Callable[[int], float]
     utility_function: Callable[[float], float]
     discount_factor: float
 
@@ -22,6 +23,10 @@ class LearningAgent(Agent):
     target: Critic
     steps_per_target_update: int
     steps_completed: int
+
+    @property
+    def random_decision_probability(self):
+        return self.exploration_schedule(self.steps_completed)
 
     def post_turn_(self, turn_result: TurnResult):
         self.replay_buffer.register_turn_(turn_result)
