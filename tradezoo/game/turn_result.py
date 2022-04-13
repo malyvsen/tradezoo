@@ -12,7 +12,7 @@ class BaseTurnResult:
     trader: Trader
     observations: ObservationSeries
 
-    def next(self, market: Market, time_step: int):
+    def next_(self, market: Market, time_step: int):
         for client_order in market.orders_by(self.trader.client.account):
             market.cancel_(client_order)
         for own_order in market.orders_by(self.trader.account):

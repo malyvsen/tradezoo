@@ -25,7 +25,7 @@ class Game:
     def turn_(self) -> TurnResult:
         index = self.time_step % len(self.turn_results)
         old_result = self.turn_results[index]
-        new_result = old_result.next(market=self.market, time_step=self.time_step)
+        new_result = old_result.next_(market=self.market, time_step=self.time_step)
         self.turn_results[index] = new_result
         self.time_step += 1
         return self.turn_results[index]
