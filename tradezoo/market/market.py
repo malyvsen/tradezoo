@@ -48,3 +48,19 @@ class Market:
     def cancel_(self, order: Order):
         """Cancel the order"""
         self.orders.remove(order)
+
+    def best_ask(self, visible_to: Account) -> float:
+        return min(
+            order.price
+            for order in self.orders
+            if isinstance(order, SellOrder)
+            if order.visibility.matches(visible_to)
+        )
+
+    def best_bid(self, visible_to: Account) -> float:
+        return max(
+            order.price
+            for order in self.orders
+            if isinstance(order, BuyOrder)
+            if order.visibility.matches(visible_to)
+        )

@@ -1,65 +1,54 @@
 from dataclasses import dataclass
 from functools import cached_property
+import math
 import numpy as np
 import torch
 from typing import List
 
-from tradezoo.market import Market, Account, BuyOrder, SellOrder
-
 
 @dataclass(frozen=True)
 class Observation:
-    cash_balance: float
-    asset_balance: float
+    asset_allocation: float
     best_ask: float
     best_bid: float
 
-    @classmethod
-    def from_situation(cls, market: Market, account: Account) -> "Observation":
-        # TODO: prevent spoofing with invalid orders
-        return cls(
-            cash_balance=account.cash_balance,
-            asset_balance=account.asset_balance,
-            best_ask=min(
-                order.price
-                for order in market.orders
-                if isinstance(order, SellOrder)
-                if order.visibility.matches(account)
-            ),
-            best_bid=max(
-                order.price
-                for order in market.orders
-                if isinstance(order, BuyOrder)
-                if order.visibility.matches(account)
-            ),
-        )
-
     @property
-    def batch(self):
-        return ObservationBatch(observations=[self])
-
-    @property
-    def array(self) -> np.ndarray:
+    def array(self):
         return np.array(
-            [
-                self.cash_balance,
-                self.asset_balance,
-                self.best_ask,
-                self.best_bid,
-            ],
+            [self.asset_allocation, math.log(self.best_ask), math.log(self.best_bid)],
             dtype=np.float32,
         )
 
 
 @dataclass(frozen=True)
-class ObservationBatch:
+class ObservationSeries:
     observations: List[Observation]
 
+    @property
+    def batch(self):
+        return ObservationSeriesBatch(series=[self])
+
     @cached_property
+    def array(self):
+        return np.stack(
+            [observation.array for observation in self.observations],
+            axis=0,
+        )
+
+    def with_new(self, observation: Observation, horizon: int):
+        """A distinct ObservationSeries, with the given observation at the end"""
+        return type(self)(observations=(self.observations + [observation])[-horizon:])
+
+
+@dataclass(frozen=True)
+class ObservationSeriesBatch:
+    series: List[ObservationSeries]
+
+    @property
     def tensor(self) -> torch.Tensor:
         return torch.from_numpy(
             np.stack(
-                [observation.array for observation in self.observations],
+                [series.array for series in self.series],
                 axis=0,
             )
         )

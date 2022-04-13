@@ -1,68 +1,60 @@
 from dataclasses import dataclass
+from functools import cached_property
+import numpy as np
+import random
 import torch
 from typing import List
 
-from .action import Action
-from .actor import Actor
 from .critic import Critic
-from .decision_batch import DecisionBatch
-from .log_normal_batch import LogNormalBatch
-from .observation import ObservationBatch
+from .decision import Decision, DecisionBatch
+from .observation import ObservationSeries, ObservationSeriesBatch
 
 
-@dataclass(frozen=True)
-class Agent:
-    actor: Actor
-    actor_optimizer: torch.optim.Optimizer
+@dataclass(frozen=False)
+class BaseAgent:
+    """The part of a trader responsible for making decisions."""
+
     critic: Critic
-    critic_optimizer: torch.optim.Optimizer
-    discount_factor: float
+    decision_resolution: int
+    max_desperation: float
+    horizon: int
 
-    def decide(self, observation_batch: ObservationBatch) -> DecisionBatch:
-        decision_parameters = self.actor(observation_batch.tensor)
-        softplus = torch.nn.Softplus()
-        return DecisionBatch(
-            mid_price=LogNormalBatch(
-                underlying_means=decision_parameters[:, 0],
-                underlying_stds=softplus(decision_parameters[:, 1]),
+    def decide(self, observations: ObservationSeries) -> Decision:
+        if random.random() < self.random_decision_probability:
+            return random.choice(self.possible_decisions)
+        return self.best_decision(observations)
+
+    def best_decision(self, observations: ObservationSeries) -> Decision:
+        evaluations = self.critic.evaluate(
+            observations=ObservationSeriesBatch(
+                [observations] * len(self.possible_decisions)
             ),
-            spread=LogNormalBatch(
-                underlying_means=decision_parameters[:, 2],
-                underlying_stds=softplus(decision_parameters[:, 3]),
-            ),
+            decisions=DecisionBatch(self.possible_decisions),
         )
+        best_index = torch.argmax(evaluations, dim=0).item()
+        return self.possible_decisions[best_index]
 
-    def evaluate(self, observation_batch: ObservationBatch) -> torch.Tensor:
-        return self.critic(observation_batch.tensor)
-
-    def train_step_(
-        self,
-        old_observations: ObservationBatch,
-        actions: List[Action],
-        rewards: torch.Tensor,
-        new_observations: ObservationBatch,
-    ):
-        td_error = (
-            rewards
-            + self.discount_factor * self.evaluate(new_observations).detach()
-            - self.evaluate(old_observations)
-        )
-
-        critic_loss = td_error.square().mean()
-        self.critic_optimizer.zero_grad()
-        critic_loss.backward()
-        self.critic_optimizer.step()
-
-        actor_loss = (
-            -td_error.detach()
-            * self.decide(old_observations).log_probabilities(actions)
-        ).mean()
-        self.actor_optimizer.zero_grad()
-        actor_loss.backward()
-        self.actor_optimizer.step()
+    @cached_property
+    def possible_decisions(self):
+        return [
+            Decision(
+                target_asset_allocation=target_asset_allocation, desperation=desperation
+            )
+            for target_asset_allocation in np.linspace(
+                0, 1, num=self.decision_resolution
+            )
+            for desperation in np.linspace(
+                0, self.max_desperation, num=self.decision_resolution
+            )
+        ]
 
     def __hash__(self):
         return id(self)
 
     def __eq__(self, other):
         return self is other
+
+
+@dataclass(frozen=False)
+class Agent(BaseAgent):
+    random_decision_probability: float

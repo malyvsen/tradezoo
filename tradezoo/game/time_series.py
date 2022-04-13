@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cache
+import math
 import numpy as np
 from typing import List, Union
 
@@ -9,6 +10,12 @@ class TimeSeries:
     def value(self, step: int) -> float:
         raise NotImplementedError()
 
+    def exp(self):
+        return ExpTimeSeries(self)
+
+    def __neg__(self):
+        return 0 - self
+
     def __add__(self, other: Union["TimeSeries", float]) -> "TimeSeries":
         return TimeSeriesSum(
             [self, other if isinstance(other, TimeSeries) else Constant(other)]
@@ -17,6 +24,12 @@ class TimeSeries:
     def __radd__(self, other: float):
         return self.__add__(other)
 
+    def __sub__(self, other: Union["TimeSeries", float]) -> "TimeSeries":
+        return self + (-other)
+
+    def __rsub__(self, other: float) -> "TimeSeries":
+        return -self + other
+
     def __mul__(self, other: Union["TimeSeries", float]) -> "TimeSeries":
         return TimeSeriesProduct(
             [self, other if isinstance(other, TimeSeries) else Constant(other)]
@@ -24,6 +37,9 @@ class TimeSeries:
 
     def __rmul__(self, other: float):
         return self.__mul__(other)
+
+    def __truediv__(self, other: float) -> "TimeSeries":
+        return self * (1 / other)
 
 
 @dataclass(frozen=True)
@@ -40,6 +56,14 @@ class TimeSeriesProduct(TimeSeries):
 
     def value(self, step: int) -> float:
         return np.prod([component.value(step) for component in self.components])
+
+
+@dataclass(frozen=True)
+class ExpTimeSeries(TimeSeries):
+    slave: TimeSeries
+
+    def value(self, step: int) -> float:
+        return math.exp(self.slave.value(step))
 
 
 @dataclass(frozen=True)

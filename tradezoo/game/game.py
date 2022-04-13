@@ -1,54 +1,31 @@
 from dataclasses import dataclass
 from typing import List
 
-from tradezoo.agent import Observation
-from tradezoo.market import BuyOrder, Market, SellOrder
+from tradezoo.market import Market
 from .trader import Trader
-from .turn_result import TurnResult
+from .turn_result import InitialTurnResult, TurnResult
 
 
 @dataclass
 class Game:
+    """Responsible for scheduling which trader gets to trade when."""
+
     market: Market
-    traders: List[Trader]
-    turn_number: int
+    turn_results: List[TurnResult]
+    time_step: int
 
     @classmethod
     def new(cls, market: Market, traders: List[Trader]) -> "Game":
-        return cls(market=market, traders=traders, turn_number=0)
+        return cls(
+            market=market,
+            turn_results=[InitialTurnResult.empty(trader=trader) for trader in traders],
+            time_step=0,
+        )
 
     def turn_(self) -> TurnResult:
-        trader = self.traders[self.turn_number % len(self.traders)]
-        for client_order in self.market.orders_by(trader.client.account):
-            self.market.cancel_(client_order)
-        for own_order in self.market.orders_by(trader.account):
-            self.market.cancel_(own_order)
-
-        for client_order in trader.client.orders(self.turn_number):
-            self.market.submit_(client_order)
-        observation = Observation.from_situation(
-            market=self.market,
-            account=trader.account,
-        )
-        decision_batch = trader.agent.decide(observation.batch)
-        (action,) = decision_batch.sample()
-        buy_trades = self.market.submit_(
-            BuyOrder.public(submitted_by=trader.account, price=action.bid, volume=1)
-        )
-        sell_trades = self.market.submit_(
-            SellOrder.public(submitted_by=trader.account, price=action.ask, volume=1)
-        )
-
-        result = TurnResult(
-            turn_number=self.turn_number,
-            trader=trader,
-            observation=observation,
-            decision_batch=decision_batch,
-            action=action,
-            reward=trader.account.net_worth(
-                asset_value=(observation.best_bid * observation.best_ask) ** 0.5
-            ),
-            trades=buy_trades + sell_trades,
-        )
-        self.turn_number += 1
-        return result
+        index = self.time_step % len(self.turn_results)
+        old_result = self.turn_results[index]
+        new_result = old_result.next_(market=self.market, time_step=self.time_step)
+        self.turn_results[index] = new_result
+        self.time_step += 1
+        return self.turn_results[index]

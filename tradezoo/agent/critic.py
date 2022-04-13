@@ -1,18 +1,37 @@
 import torch
+from .decision import DecisionBatch
+from .observation import ObservationSeriesBatch
 
 
 class Critic(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        self.network = torch.nn.Sequential(
-            torch.nn.Linear(4, 64),
+        self.observation_embedder = torch.nn.LSTM(
+            input_size=3, hidden_size=64, batch_first=True
+        )
+        self.decision_embedder = torch.nn.Sequential(
+            torch.nn.Linear(2, 64),
             torch.nn.LeakyReLU(),
-            torch.nn.Linear(64, 32),
+        )
+        self.head = torch.nn.Sequential(
+            torch.nn.Linear(64 + 64, 32),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(32, 16),
             torch.nn.LeakyReLU(),
             torch.nn.Linear(16, 1),
         )
 
-    def forward(self, observations: torch.Tensor) -> torch.Tensor:
-        return self.network(observations).squeeze(1)
+    def evaluate(
+        self, observations: ObservationSeriesBatch, decisions: DecisionBatch
+    ) -> torch.Tensor:
+        return self(observations.tensor, decisions.tensor)
+
+    def forward(
+        self, observations: torch.Tensor, decisions: torch.Tensor
+    ) -> torch.Tensor:
+        observation_embeddings, lstm_states = self.observation_embedder(observations)
+        decision_embedding = self.decision_embedder(decisions)
+        combined_embeddings = torch.cat(
+            [observation_embeddings[:, -1], decision_embedding], dim=1
+        )
+        return self.head(combined_embeddings).squeeze(1)
