@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import torch
 from typing import Callable, List
 
-from tradezoo.agent import BaseAgent, Critic, DecisionBatch, ObservationSeriesBatch
+from tradezoo.agent import Agent, Critic, DecisionBatch, ObservationSeriesBatch
 from tradezoo.game import TurnResult
 from .experience import Experience
 from .replay_buffer import ReplayBuffer
@@ -10,7 +10,7 @@ from .train_result import TrainResult
 
 
 @dataclass(frozen=False)
-class LearningAgent(BaseAgent):
+class LearningAgent(Agent):
     exploration_schedule: Callable[[int], float]
     utility_function: Callable[[float], float]
     discount_factor: float
@@ -70,14 +70,14 @@ class LearningAgent(BaseAgent):
         with torch.no_grad():
             flattened_evaluations: torch.Tensor = self.target(
                 observations=observations.tensor.repeat_interleave(
-                    len(self.possible_decisions), dim=0
+                    len(self.decision_space), dim=0
                 ),
-                decisions=DecisionBatch(self.possible_decisions).tensor.tile(
+                decisions=DecisionBatch(self.decision_space).tensor.tile(
                     [len(observations.series), 1]
                 ),
             )
         evaluations = flattened_evaluations.reshape(
-            len(observations.series), len(self.possible_decisions)
+            len(observations.series), len(self.decision_space)
         )
         return evaluations.max(dim=1).values
 

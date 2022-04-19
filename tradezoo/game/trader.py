@@ -28,14 +28,15 @@ class Trader:
         )
         asset_value_change = asset_allocation_change * state.net_worth
         asset_balance_change = asset_value_change / state.mid_price
+        decision_price = state.mid_price * decision.relative_price
         if asset_balance_change < 0:
             return SellOrder.public(
                 submitted_by=self.account,
-                price=state.best_bid / (1 + decision.desperation),
+                price=decision_price,
                 volume=-asset_balance_change,
             )
         return BuyOrder.public(
             submitted_by=self.account,
-            price=state.best_ask * (1 + decision.desperation),
+            price=decision_price,
             volume=asset_balance_change,
         )

@@ -3,7 +3,6 @@ from functools import cached_property
 import numpy as np
 import random
 import torch
-from typing import List
 
 from .critic import Critic
 from .decision import Decision, DecisionBatch
@@ -11,42 +10,43 @@ from .observation import ObservationSeries, ObservationSeriesBatch
 
 
 @dataclass(frozen=False)
-class BaseAgent:
+class Agent:
     """The part of a trader responsible for making decisions."""
 
     critic: Critic
-    decision_resolution: int
-    max_desperation: float
     horizon: int
+    allocation_space: np.array
+    relative_price_space: np.array
+
+    @cached_property
+    def decision_space(self):
+        return [
+            Decision(
+                target_asset_allocation=target_asset_allocation,
+                relative_price=relative_price,
+            )
+            for target_asset_allocation in self.allocation_space
+            for relative_price in self.relative_price_space
+        ]
+
+    @property
+    def random_decision_probability(self):
+        raise NotImplementedError()
 
     def decide(self, observations: ObservationSeries) -> Decision:
         if random.random() < self.random_decision_probability:
-            return random.choice(self.possible_decisions)
+            return random.choice(self.decision_space)
         return self.best_decision(observations)
 
     def best_decision(self, observations: ObservationSeries) -> Decision:
         evaluations = self.critic.evaluate(
             observations=ObservationSeriesBatch(
-                [observations] * len(self.possible_decisions)
+                [observations] * len(self.decision_space)
             ),
-            decisions=DecisionBatch(self.possible_decisions),
+            decisions=DecisionBatch(self.decision_space),
         )
         best_index = torch.argmax(evaluations, dim=0).item()
-        return self.possible_decisions[best_index]
-
-    @cached_property
-    def possible_decisions(self):
-        return [
-            Decision(
-                target_asset_allocation=target_asset_allocation, desperation=desperation
-            )
-            for target_asset_allocation in np.linspace(
-                0, 1, num=self.decision_resolution
-            )
-            for desperation in np.linspace(
-                0, self.max_desperation, num=self.decision_resolution
-            )
-        ]
+        return self.decision_space[best_index]
 
     def __hash__(self):
         return id(self)
@@ -56,5 +56,7 @@ class BaseAgent:
 
 
 @dataclass(frozen=False)
-class Agent(BaseAgent):
-    random_decision_probability: float
+class DeterministicAgent(Agent):
+    @property
+    def random_decision_probability(self):
+        raise 0

@@ -1,11 +1,11 @@
-from .agent import Agent, Critic, Decision, Observation
+from .agent import Agent, Critic, Decision, DeterministicAgent, Observation
 from .game import (
     Client,
-    Game,
-    State,
     Constant,
-    SineWave,
+    Game,
     GeometricBrownianMotion,
+    SineWave,
+    State,
     Trader,
     TurnResult,
 )

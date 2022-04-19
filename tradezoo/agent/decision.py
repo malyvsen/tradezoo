@@ -8,12 +8,12 @@ from typing import List
 @dataclass(frozen=True)
 class Decision:
     target_asset_allocation: float
-    desperation: float
+    relative_price: float
 
     @cached_property
     def array(self):
         return np.array(
-            [self.target_asset_allocation, self.desperation], dtype=np.float32
+            [self.target_asset_allocation, self.relative_price], dtype=np.float32
         )
 
 
