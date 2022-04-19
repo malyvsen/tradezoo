@@ -102,6 +102,7 @@ def main():
                 total_balances=total_balances(hyperparameters),
             )
             save_file.write(f"{json.dumps(result_dict)},\n")
+            save_file.flush()
         save_file.write("]\n")
 
 
