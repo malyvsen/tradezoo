@@ -47,7 +47,7 @@ def make_agent(hyperparameters: Hyperparameters):
 
 
 def run_experiment(hyperparameters):
-    trader_account = Account(cash_balance=2048, asset_balance=2048)
+    trader_account = Account(cash_balance=1, asset_balance=1)
     client_account = Account(cash_balance=float("inf"), asset_balance=float("inf"))
     price_process = 1 + SineWave(period=16) * 0.2
     trader = Trader(
@@ -64,7 +64,7 @@ def run_experiment(hyperparameters):
         market=Market.from_accounts([trader_account, client_account]),
         traders=[trader],
     )
-    return Experiment.run_(game=game, num_steps=1024, loading_bar=False)
+    return Experiment.run_(game=game, num_steps=2048, loading_bar=False)
 
 
 def total_balances(hyperparameters, num_runs=4):
@@ -88,10 +88,10 @@ def main():
         )
         for exploration_level in [256, 1024, 4096]
         for discount_factor in [0.9, 0.99]
-        for replay_buffer_capacity in [16, 64]
-        for batch_size in [1, 16]
-        for train_steps_per_turn in [16, 64]
-        for learning_rate in [1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4, 1e-3]
+        for replay_buffer_capacity in [64, 256]
+        for batch_size in [16]
+        for train_steps_per_turn in [64]
+        for learning_rate in [5e-5, 1e-4, 2e-4, 5e-4]
         for steps_per_target_update in [256, 1024, 4096]
     ]
     with open("./hyperparameter_results.json", "w") as save_file:
