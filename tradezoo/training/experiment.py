@@ -3,7 +3,7 @@ from typing import List
 from tqdm.auto import trange
 
 from tradezoo.game import Game, Trader, TurnResult
-from .plots import balance_plot, reward_plot, trades_plot, training_plot
+from .plots import balance_plot, price_plot, reward_plot, trades_plot, training_plot
 from .learning_agent import LearningAgent
 from .train_result import TrainResult
 
@@ -36,6 +36,9 @@ class Experiment:
 
     def balance_plot(self, trader: Trader):
         return balance_plot(self.turn_results(trader))
+
+    def price_plot(self):
+        return price_plot(turn_results=[step.turn_result for step in self.time_steps])
 
     def reward_plot(self, trader: Trader):
         return reward_plot(agent=trader.agent, turn_results=self.turn_results(trader))
