@@ -1,10 +1,10 @@
 from dataclasses import dataclass, asdict
 import json
+from manydo import map
 import math
 import numpy as np
 import random
 import torch
-from tqdm.auto import tqdm
 from tradezoo.agent import Critic
 from tradezoo.game import Game, Client, SineWave, Trader
 from tradezoo.market import Account, Market
@@ -87,17 +87,18 @@ def main():
             learning_rate=2 ** random.uniform(-15, -9),
             steps_per_target_update=2 ** random.randint(8, 12),
         )
+        for _ in range(128)
     ]
+    results = map(
+        function=lambda hyperparameters: dict(
+            hyperparameters=asdict(hyperparameters),
+            total_balances=total_balances(hyperparameters),
+        ),
+        iterable=all_hyperparameters,
+        num_jobs=8,
+    )
     with open("./hyperparameter_results.json", "w") as save_file:
-        save_file.write("[\n")
-        for hyperparameters in tqdm(all_hyperparameters):
-            result_dict = dict(
-                hyperparameters=asdict(hyperparameters),
-                total_balances=total_balances(hyperparameters),
-            )
-            save_file.write(f"{json.dumps(result_dict)},\n")
-            save_file.flush()
-        save_file.write("]\n")
+        json.dump(results, save_file)
 
 
 main()
