@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import math
+import numpy as np
 import torch
 from typing import Callable, List
 
@@ -27,6 +29,26 @@ class LearningAgent(Agent):
     @property
     def random_decision_probability(self):
         return self.exploration_schedule(self.steps_completed)
+
+    @classmethod
+    def good_hyperparameters(cls):
+        critic = Critic()
+        return cls(
+            critic=critic,
+            horizon=2,
+            allocation_space=np.linspace(0, 1, num=8),
+            relative_price_space=2 ** np.linspace(-0.2, 0.2, num=9),
+            exploration_schedule=lambda step: 256 / (step + 256),
+            utility_function=math.log,
+            discount_factor=0.9,
+            replay_buffer=ReplayBuffer.empty(capacity=256),
+            batch_size=16,
+            train_steps_per_turn=64,
+            optimizer=torch.optim.Adam(critic.parameters(), lr=2e-4),
+            target=Critic(),
+            steps_per_target_update=2048,
+            steps_completed=0,
+        )
 
     def post_turn_(self, turn_result: TurnResult):
         self.replay_buffer.register_turn_(turn_result)
