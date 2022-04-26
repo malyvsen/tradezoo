@@ -2,6 +2,7 @@ from dataclasses import dataclass, asdict
 import json
 import math
 import numpy as np
+import random
 import torch
 from tqdm.auto import tqdm
 from tradezoo.agent import Critic
@@ -78,21 +79,14 @@ def total_balances(hyperparameters, num_runs=4):
 def main():
     all_hyperparameters = [
         Hyperparameters(
-            exploration_level=exploration_level,
-            discount_factor=discount_factor,
-            replay_buffer_capacity=replay_buffer_capacity,
-            batch_size=batch_size,
-            train_steps_per_turn=train_steps_per_turn,
-            learning_rate=learning_rate,
-            steps_per_target_update=steps_per_target_update,
+            exploration_level=2 ** random.randint(0, 12),
+            discount_factor=1 - 2 ** random.uniform(-10, -2),
+            replay_buffer_capacity=2 ** random.randint(4, 10),
+            batch_size=2 ** random.randint(2, 4),
+            train_steps_per_turn=2 ** random.randint(6, 8),
+            learning_rate=2 ** random.uniform(-15, -9),
+            steps_per_target_update=2 ** random.randint(8, 12),
         )
-        for exploration_level in [256, 1024, 4096]
-        for discount_factor in [0.9, 0.99]
-        for replay_buffer_capacity in [64, 256]
-        for batch_size in [16]
-        for train_steps_per_turn in [64]
-        for learning_rate in [5e-5, 1e-4, 2e-4, 5e-4]
-        for steps_per_target_update in [256, 1024, 4096]
     ]
     with open("./hyperparameter_results.json", "w") as save_file:
         save_file.write("[\n")
