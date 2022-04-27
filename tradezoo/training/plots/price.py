@@ -40,6 +40,6 @@ def price_plot(turn_results: List[TurnResult]):
         data=[
             scatter_prices(name="Purchase from client", client_side="seller"),
             scatter_prices(name="Sale to client", client_side="buyer"),
-            scatter_prices(name="Excange between traders", client_side=None),
+            scatter_prices(name="Exchange between traders", client_side=None),
         ],
     )
