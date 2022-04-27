@@ -4,7 +4,13 @@ import numpy as np
 import torch
 from typing import Callable, List
 
-from tradezoo.agent import Agent, Critic, DecisionBatch, ObservationSeriesBatch
+from tradezoo.agent import (
+    Agent,
+    Critic,
+    DecisionBatch,
+    DeterministicAgent,
+    ObservationSeriesBatch,
+)
 from tradezoo.game import TurnResult
 from .experience import Experience
 from .replay_buffer import ReplayBuffer
@@ -29,6 +35,15 @@ class LearningAgent(Agent):
     @property
     def random_decision_probability(self):
         return self.exploration_schedule(self.steps_completed)
+
+    @property
+    def deterministic(self) -> DeterministicAgent:
+        return DeterministicAgent(
+            critic=self.critic,
+            horizon=self.horizon,
+            allocation_space=self.allocation_space,
+            relative_price_space=self.relative_price_space,
+        )
 
     @classmethod
     def good_hyperparameters(cls):
