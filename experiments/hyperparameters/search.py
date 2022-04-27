@@ -97,7 +97,7 @@ def main():
         iterable=all_hyperparameters,
         num_jobs=8,
     )
-    with open("./hyperparameter_results.json", "w") as save_file:
+    with open("./results.json", "w") as save_file:
         json.dump(results, save_file)
 
 
