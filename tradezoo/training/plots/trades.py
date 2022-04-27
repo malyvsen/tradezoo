@@ -19,16 +19,21 @@ def trades_plot(trader: Trader, turn_results: List[TurnResult]):
         return relative_mass**0.5 * 20
 
     def scatter_trades(name: str, side: str):
+        trades = select_trades(side)
         return go.Scatter(
             name=name,
             mode="markers",
-            x=[turn_result.time_step for turn_result, trade in select_trades(side)],
-            y=[trade.price for turn_result, trade in select_trades(side)],
+            x=[turn_result.time_step for turn_result, trade in trades],
+            y=[trade.price for turn_result, trade in trades],
             marker=dict(
                 size=[
                     bubble_size(turn_result=turn_result, trade=trade)
-                    for turn_result, trade in select_trades(side)
-                ]
+                    for turn_result, trade in trades
+                ],
+                opacity=[
+                    0.5 if turn_result.decision.random else 1
+                    for turn_result, trade in trades
+                ],
             ),
         )
 
@@ -36,6 +41,7 @@ def trades_plot(trader: Trader, turn_results: List[TurnResult]):
         layout=dict(
             xaxis=dict(title="Turn number", range=[0, len(turn_results) - 1]),
             yaxis=dict(title="Price", type="log"),
+            legend=dict(title=dict(text="Opacity indicates randomness")),
         ),
         data=[
             scatter_trades(name="Purchase", side="buyer"),

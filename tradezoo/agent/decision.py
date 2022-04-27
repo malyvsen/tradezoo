@@ -9,6 +9,7 @@ from typing import List
 class Decision:
     target_asset_allocation: float
     relative_price: float
+    random: bool
 
     @cached_property
     def array(self):

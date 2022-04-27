@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import cached_property
 import numpy as np
 import random
@@ -24,6 +24,7 @@ class Agent:
             Decision(
                 target_asset_allocation=target_asset_allocation,
                 relative_price=relative_price,
+                random=False,
             )
             for target_asset_allocation in self.allocation_space
             for relative_price in self.relative_price_space
@@ -35,7 +36,7 @@ class Agent:
 
     def decide(self, observations: ObservationSeries) -> Decision:
         if random.random() < self.random_decision_probability:
-            return random.choice(self.decision_space)
+            return replace(random.choice(self.decision_space), random=True)
         return self.best_decision(observations)
 
     def best_decision(self, observations: ObservationSeries) -> Decision:
@@ -59,4 +60,4 @@ class Agent:
 class DeterministicAgent(Agent):
     @property
     def random_decision_probability(self):
-        raise 0
+        return 0
