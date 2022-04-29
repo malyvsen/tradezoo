@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from tradezoo.agent import Decision, ObservationSeries
-from tradezoo.market import Market, Trade
+from tradezoo.market import Market, Order, Trade
 from .state import State
 from .trader import Trader
 
@@ -33,6 +33,7 @@ class BaseTurnResult:
             time_step=time_step,
             state=state,
             decision=decision,
+            order=order,
             trades=trades,
         )
 
@@ -49,4 +50,5 @@ class TurnResult(BaseTurnResult):
     time_step: int
     state: State
     decision: Decision
+    order: Order
     trades: List[Trade]
