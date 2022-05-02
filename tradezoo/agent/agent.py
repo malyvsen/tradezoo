@@ -16,18 +16,18 @@ class Agent:
     critic: Critic
     horizon: int
     allocation_space: np.array
-    relative_price_space: np.array
+    price_space: np.array
 
     @cached_property
     def decision_space(self):
         return [
             Decision(
                 target_asset_allocation=target_asset_allocation,
-                relative_price=relative_price,
+                price=price,
                 random=False,
             )
             for target_asset_allocation in self.allocation_space
-            for relative_price in self.relative_price_space
+            for price in self.price_space
         ]
 
     @property

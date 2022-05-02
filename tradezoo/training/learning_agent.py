@@ -42,7 +42,7 @@ class LearningAgent(Agent):
             critic=self.critic,
             horizon=self.horizon,
             allocation_space=self.allocation_space,
-            relative_price_space=self.relative_price_space,
+            price_space=self.price_space,
         )
 
     @classmethod
@@ -52,11 +52,11 @@ class LearningAgent(Agent):
             critic=critic,
             horizon=2,
             allocation_space=np.linspace(0, 1, num=8),
-            relative_price_space=2 ** np.linspace(-0.2, 0.2, num=9),
-            exploration_schedule=lambda step: 256 / (step + 256),
+            price_space=2 ** np.linspace(-1, 1, num=17),
+            exploration_schedule=lambda step: 1024 / (step + 1024),
             utility_function=math.log,
             discount_factor=0.9,
-            replay_buffer=ReplayBuffer.empty(capacity=256),
+            replay_buffer=ReplayBuffer.empty(capacity=1024),
             batch_size=16,
             train_steps_per_turn=64,
             optimizer=torch.optim.Adam(critic.parameters(), lr=2e-4),
