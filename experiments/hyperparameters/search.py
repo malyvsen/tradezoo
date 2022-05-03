@@ -68,12 +68,10 @@ def run_experiment(hyperparameters):
     return Experiment.run_(game=game, num_steps=2048, loading_bar=False)
 
 
-def total_balances(hyperparameters, num_runs=4):
-    experiments = [run_experiment(hyperparameters) for _ in range(num_runs)]
-    final_states = [
-        experiment.time_steps[-1].turn_result.state for experiment in experiments
-    ]
-    return [state.cash_balance + state.asset_balance for state in final_states]
+def total_balance(hyperparameters):
+    experiment = run_experiment(hyperparameters)
+    final_state = experiment.time_steps[-1].turn_result.state
+    return final_state.cash_balance + final_state.asset_balance
 
 
 def main():
@@ -87,12 +85,12 @@ def main():
             learning_rate=2 ** random.uniform(-15, -9),
             steps_per_target_update=2 ** random.randint(8, 12),
         )
-        for _ in range(128)
+        for _ in range(256)
     ]
     results = map(
         function=lambda hyperparameters: dict(
             hyperparameters=asdict(hyperparameters),
-            total_balances=total_balances(hyperparameters),
+            total_balances=total_balance(hyperparameters),
         ),
         iterable=all_hyperparameters,
         num_jobs=8,
