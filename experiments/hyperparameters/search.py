@@ -65,7 +65,7 @@ def run_experiment(hyperparameters):
         market=Market.from_accounts([trader_account, client_account]),
         traders=[trader],
     )
-    return Experiment.run_(game=game, num_steps=2048, loading_bar=False)
+    return Experiment.run_(game=game, num_steps=1, loading_bar=False)
 
 
 def total_balance(hyperparameters):
@@ -87,16 +87,23 @@ def main():
         )
         for _ in range(256)
     ]
-    results = map(
-        function=lambda hyperparameters: dict(
-            hyperparameters=asdict(hyperparameters),
-            total_balances=total_balance(hyperparameters),
-        ),
+    total_balances = map(
+        function=total_balance,
         iterable=all_hyperparameters,
         num_jobs=8,
     )
     with open("./results.json", "w") as save_file:
-        json.dump(results, save_file)
+        json.dump(
+            [
+                dict(
+                    hyperparameters=asdict(hyperparameters), total_balance=total_balance
+                )
+                for hyperparameters, total_balance in zip(
+                    all_hyperparameters, total_balances
+                )
+            ],
+            save_file,
+        )
 
 
 main()
