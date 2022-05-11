@@ -65,7 +65,7 @@ def run_experiment(hyperparameters):
         market=Market.from_accounts([trader_account, client_account]),
         traders=[trader],
     )
-    return Experiment.run_(game=game, num_steps=1, loading_bar=False)
+    return Experiment.run_(game=game, num_steps=2048, loading_bar=False)
 
 
 def total_balance(hyperparameters):
